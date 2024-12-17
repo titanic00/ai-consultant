@@ -1,45 +1,51 @@
-# ai_consultant
+# Consultant Bot
 
-This template should help get you started developing with Vue 3 in Vite.
+## Overview
 
-## Recommended IDE Setup
+The Consultant Bot is an AI-powered virtual assistant designed to help users find necessary items and create customized designs based on their preferences. It leverages intelligent algorithms to provide tailored recommendations and streamline the process of design selection.
 
-[VSCode](https://code.visualstudio.com/) + [Volar](https://marketplace.visualstudio.com/items?itemName=Vue.volar) (and disable Vetur).
+## Features
 
-## Type Support for `.vue` Imports in TS
+- Personalized Recommendations: Suggests items based on user preferences and needs.
 
-TypeScript cannot handle type information for `.vue` imports by default, so we replace the `tsc` CLI with `vue-tsc` for type checking. In editors, we need [Volar](https://marketplace.visualstudio.com/items?itemName=Vue.volar) to make the TypeScript language service aware of `.vue` types.
+- Design Assistance: Creates designs tailored to individual requirements.
 
-## Customize configuration
+- Interactive Conversations: Engages in natural language conversations to understand user inputs.
 
-See [Vite Configuration Reference](https://vite.dev/config/).
+- Smart Suggestions: Utilizes AI to propose optimized solutions and combinations.
 
-## Project Setup
+## Installation
 
-```sh
+1. Clone the repository:
+
+```bash
+git clone https://github.com/titanic00/ai-consultant.git
+```
+
+2. Navigate to the project directory:
+
+```bash
+cd ai-consultant
+```
+
+3. Install dependencies:
+
+```bash
 npm install
 ```
 
-### Compile and Hot-Reload for Development
+## Usage
 
-```sh
-npm run dev
+1. Start the bot:
+
+```bash
+npm start
 ```
 
-### Type-Check, Compile and Minify for Production
+2. Interact with the bot through the chat interface provided.
 
-```sh
-npm run build
-```
+3. Follow the prompts to get item recommendations or design suggestions.
 
-### Run Unit Tests with [Vitest](https://vitest.dev/)
+## Technologies Used
 
-```sh
-npm run test:unit
-```
-
-### Lint with [ESLint](https://eslint.org/)
-
-```sh
-npm run lint
-```
+Frontend: Vue 3
