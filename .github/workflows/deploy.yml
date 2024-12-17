@@ -48,9 +48,26 @@ jobs:
           username: ${{ secrets.SERVER_USERNAME }}
           key: ${{ secrets.SERVER_SSH_KEY }}
           script: |
-            cd /opt/app/ai-consultant/
+            if ! command -v node &> /dev/null
+            then
+                echo "Node.js не установлен. Устанавливаем..."
+                curl -fsSL https://deb.nodesource.com/setup_20.x | sudo -E bash -
+                sudo apt-get install -y nodejs
+            fi
+
             echo "Node version: $(node -v)"
             echo "NPM version: $(npm -v)"
-            git pull origin main
+
+            git config --global user.email "vitaliy.michschenko@gmail.com"
+            git config --global user.name "titanic00"
+
+            cd /opt/app/ai-consultant/
+
+            if [ -d ".git" ]; then
+                git pull origin main
+            else
+                git clone git@github.com:titanic00/ai-consultant.git .
+            fi
+
             npm install
             npm run build
