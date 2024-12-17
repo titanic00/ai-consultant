@@ -38,8 +38,8 @@ jobs:
 
       - name: Copy files to Google Cloud VM
         run: |
-          scp -o StrictHostKeyChecking=no -i ${{ secrets.GCP_SA_KEY }} -r ./dist/* nic0@35.223.168.92:/var/www/html/
+          scp -o StrictHostKeyChecking=no -i ${{ secrets.SERVER_SSH_KEY }} -r ./dist/* nic0@35.223.168.92:/var/www/html/
 
       - name: Restart Nginx on the server
         run: |
-          ssh -o StrictHostKeyChecking=no -i ${{ secrets.GCP_SA_KEY }} nic0@35.223.168.92 'sudo systemctl restart nginx'
+          ssh -o StrictHostKeyChecking=no -i ${{ secrets.SERVER_SSH_KEY }} nic0@35.223.168.92 'sudo systemctl restart nginx'
