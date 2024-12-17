@@ -29,12 +29,6 @@ jobs:
             ${{ runner.os }}-build-
             ${{ runner.os }}-
 
-      - name: Check configuration
-        run: |
-          echo "GitHub Workspace: $GITHUB_WORKSPACE"
-          echo "GitHub Ref: $GITHUB_REF"
-          echo "GitHub Event Name: $GITHUB_EVENT_NAME"
-
       - name: Install dependencies
         run: npm ci
 
@@ -50,7 +44,7 @@ jobs:
           script: |
             if ! command -v node &> /dev/null
             then
-                echo "Node.js не установлен. Устанавливаем..."
+                echo "Node.js is not installed. Installing..."
                 curl -fsSL https://deb.nodesource.com/setup_20.x | sudo -E bash -
                 sudo apt-get install -y nodejs
             fi
