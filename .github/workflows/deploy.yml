@@ -30,7 +30,7 @@ jobs:
           username: ${{ secrets.SERVER_USERNAME }}
           key: ${{ secrets.SERVER_SSH_KEY }}
           script: |
-            cd /project/path
+            cd /opt/app/ai-consultant/
             git pull origin main
             npm install
             npm run build
