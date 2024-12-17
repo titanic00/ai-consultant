@@ -1,5 +1,5 @@
 # Build stage
-FROM nginx:23-alpine3.20 as build-stage
+FROM nginx:23-alpine as build-stage
 WORKDIR /app
 COPY package*.json ./
 RUN npm install
