@@ -1,4 +1,4 @@
-import App from '@/App.vue'
+import Startpage from '@/views/Startpage.vue'
 import { createRouter, createWebHistory } from 'vue-router'
 
 const router = createRouter({
@@ -7,7 +7,7 @@ const router = createRouter({
     {
       path: '/',
       name: 'Startpage',
-      component: App
+      component: Startpage
     },
   ],
 })
