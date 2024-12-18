@@ -1,9 +1,21 @@
-<script setup lang="ts">
+<script lang="ts">
+import HelloWorld from '@/components/HelloWorld.vue'
+
+export default {
+  data() {
+    return {
+      components: [HelloWorld],
+      mounted() {
+        console.log("tews");
+      }
+    }
+  }
+}
 </script>
 
 <template>
   <!-- <RouterView />  -->
-  <h1>Hello World! Hello Vue! Hello!</h1>
+  <HelloWorld />
 </template>
 
 <style scoped></style>
