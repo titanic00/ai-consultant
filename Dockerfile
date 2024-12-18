@@ -9,5 +9,5 @@ RUN [ "npm", "run", "build"]
 FROM nginx:1.25.4-alpine as production-stage
 COPY config/nginx/nginx.conf /etc/nginx/nginx.conf
 COPY --from=build-stage /usr/src/app/dist /usr/share/nginx/html
-EXPOSE 80
+EXPOSE 8080
 CMD ["nginx", "-g", "daemon off;"]
