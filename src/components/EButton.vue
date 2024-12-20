@@ -1,13 +1,21 @@
 <script lang="ts">
 
 export default {
-
+    props: {
+        title: String
+    },
+    emits: ['click'],
+    methods: {
+        handleClick() {
+            this.$emit('click')
+        }
+    }
 }
 </script>
 
 <template>
     <div class="ebutton__body">
-        <button>Send</button>
+        <button @click="handleClick()">{{ title }}</button>
     </div>
 </template>
 

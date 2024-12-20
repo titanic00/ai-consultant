@@ -3,14 +3,26 @@ import EButton from './EButton.vue';
 
 
 export default {
-    components: { EButton }
+    components: { EButton },
+    emits: ['click'],
+    data() {
+        return {
+            input: ""
+        }
+    },
+    methods: {
+        handleClick() {
+            this.$emit('click', this.input)
+            this.input = ""
+        }
+    }
 }
 </script>
 
 <template>
     <div class="message-form__body">
-        <input type="text" id="user-input" placeholder="Type a message..." />
-        <EButton />
+        <input type="text" placeholder="Type a message..." v-model="input" />
+        <EButton :title="'Send'" @click="handleClick" />
     </div>
 </template>
 

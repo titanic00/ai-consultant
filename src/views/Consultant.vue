@@ -1,21 +1,48 @@
 <script lang="ts">
 import MessageForm from '@/components/MessageForm.vue';
 import MessageList from '@/components/MessageList.vue';
+import axios from 'axios';
 
 
 export default {
     components: { MessageList, MessageForm },
     data() {
         return {
-            messages: [
-                {
-                    content: 'Test message',
-                    type: 'assistant'
-                }
-            ]
+            messages: [{}]
         }
     },
-    methods: {}
+    mounted() {
+        // chat initialisation: creating threadId
+        axios.post("https://us-central1-startupcloudvision.cloudfunctions.net/main/newThread").then((response) => {
+            sessionStorage.setItem("thread_id", response.data.threadId);
+            this.displayMessage(response.data.message.content, "assistant");
+        })
+    },
+    methods: {
+        displayMessage(content: string, type: string) {
+            this.messages.push({ content: content, type: type })
+        },
+        sendMessage(message: string) {
+            this.displayMessage(message, 'user')
+            const threadId = sessionStorage.getItem("thread_id");
+            const body = JSON.stringify({
+                threadId: threadId,
+                message: {
+                    content: message,
+                    additional: "",
+                    messageType: "userInput"
+                }
+            })
+
+            axios.post("https://us-central1-startupcloudvision.cloudfunctions.net/main/newMessage", body, {
+                headers: {
+                    'Content-Type': 'application/json'
+                }
+            }).then((response) => {
+                this.displayMessage(response.data.message.content, "assistant");
+            })
+        }
+    },
 }
 </script>
 
@@ -25,7 +52,7 @@ export default {
             <div class="chat-box">
                 <MessageList :messages="messages" />
             </div>
-            <MessageForm />
+            <MessageForm @click="sendMessage" />
         </div>
     </div>
 </template>
