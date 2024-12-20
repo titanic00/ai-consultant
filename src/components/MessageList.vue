@@ -12,7 +12,7 @@ export default {
 
 <template>
     <div class="message-list__body">
-        <MessageItem v-for="message in messages" :key="message.id" :message="message" />
+        <MessageItem v-for="messageData in messages" :key="messageData.id" :messageData="messageData" />
     </div>
 </template>
 
