@@ -58,11 +58,8 @@ export default {
 </template>
 
 <style scoped>
-body {
+.consultant__body {
     font-family: Arial, sans-serif;
-    margin: 0;
-    padding: 0;
-    background-color: #f7f7f7;
 }
 
 .chat-container {
