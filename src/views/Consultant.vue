@@ -1,15 +1,17 @@
 <script lang="ts">
 import { newMessage, newThread } from '@/api/MessageClient';
-import MessageForm from '@/components/MessageForm.vue';
+import EButton from '@/components/EButton.vue';
+import EInput from '@/components/EInput.vue';
 import MessageList from '@/components/MessageList.vue';
 import type MessageData from '@/models/MessageData';
 
 export default {
-    components: { MessageList, MessageForm },
+    components: { MessageList, EButton, EInput },
     data() {
         return {
             messages: [] as MessageData[],
-            isFormDisabled: false
+            isFormDisabled: false,
+            content: ""
         }
     },
     mounted() {
@@ -48,9 +50,9 @@ export default {
 
             return messageData;
         },
-        sendMessage(content: string) {
+        sendMessage() {
             this.isFormDisabled = true
-            const messageData = this.createMessageData(content, "userInput", "user");
+            const messageData = this.createMessageData(this.content, "userInput", "user");
             newMessage(messageData).then((response) => {
                 this.isFormDisabled = false
                 this.displayMessage(response, "assistant");
@@ -66,14 +68,20 @@ export default {
             <div class="chat-box">
                 <MessageList :messages="messages" />
             </div>
-            <MessageForm @click="sendMessage" :is-form-disabled="isFormDisabled" />
+            <div class="consultant__form">
+                <EInput :class="{ 'consultant__input': true }" :is-form-disabled="isFormDisabled"
+                    v-model:input="content" :placeholder="'Type a message...'" />
+                <EButton :class="{ 'consultant__btn-send': true }" :title="'Send'" @click="sendMessage"
+                    :is-form-disabled="isFormDisabled" />
+            </div>
         </div>
     </div>
 </template>
 
 <style scoped>
-.consultant__body {
-    font-family: Arial, sans-serif;
+.consultant__form {
+    display: flex;
+    gap: 15px
 }
 
 .chat-container {
