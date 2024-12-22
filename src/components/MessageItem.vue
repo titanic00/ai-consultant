@@ -23,6 +23,8 @@ export default {
 </template>
 
 <style scoped>
+/* Startpage.vue */
+/* ------------------------------------------------------------------------------ */
 .landing-example-messages {
     padding: 10px;
     margin: 10px 0;
@@ -47,7 +49,7 @@ export default {
     margin-right: auto;
 }
 
-.message-block {
+.landing-example-messages .message-block {
     max-width: 90%;
     overflow-wrap: break-word;
     word-wrap: break-word;
@@ -56,6 +58,21 @@ export default {
     padding: 10px;
     border-radius: 10px;
     word-break: break-word;
+}
+
+/* Consultant.vue */
+/* ------------------------------------------------------------------------------ */
+
+.consultant-message .message-block {
+    max-width: 90%;
+    overflow-wrap: break-word;
+    word-wrap: break-word;
+    word-break: break-word;
+    hyphens: auto;
+    padding: 10px;
+    border-radius: 10px;
+    word-break: break-word;
+    line-height: 20px;
 }
 
 .consultant-message {
@@ -80,6 +97,9 @@ export default {
     width: 200px;
     height: 200px;
 }
+
+/* Base styles */
+/* ------------------------------------------------------------------------------ */
 
 a {
     overflow-wrap: break-word;
