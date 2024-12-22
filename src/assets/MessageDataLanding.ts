@@ -19,7 +19,7 @@ export const messageData = [
     },
     {
         message: {
-            additional: { "image_url": "/startpage/sneakers-example.png" },
+            additional: { "image_url": "/startpage/sneaker-example.jpg" },
             type: "landingExample"
         },
         sender: 'assistant'
