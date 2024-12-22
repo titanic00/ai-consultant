@@ -23,7 +23,7 @@ export default {
                 setTimeout(() => {
                     this.animatedMessages.push(message)
                     this.animatedMessages[index].id = index
-                }, index + 1 * 100 + (index * 100))
+                }, index + 1 * 100 + (index * 1000))
             });
         },
     },

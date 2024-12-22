@@ -1,0 +1,32 @@
+.modal-title {
+    font-size: 30px;
+}
+
+.text-impressum__text {
+    margin-bottom: 10px;
+}
+
+.text-impressum__title {
+    font-weight: 600;
+    margin-bottom: 10px;
+    font-size: 18px;
+}
+
+.modal-impressum-text .text-impressum .address-impressum__title {}
+
+.address-impressum__text {}
+
+.address-impressum__title {
+    font-weight: 600;
+    font-size: 18px;
+}
+
+.address-impressum__title--margin {
+    margin-bottom: 20px;
+}
+
+.modal-impressum-address {
+    margin-bottom: 30px;
+}
+
+.address-impressum {}

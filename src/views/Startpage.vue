@@ -3,13 +3,15 @@ import { messageData } from '@/assets/MessageDataLanding.ts';
 import EButton from '@/components/EButton.vue';
 import EInput from '@/components/EInput.vue';
 import MessageList from '@/components/MessageList.vue';
+import { impressum } from '@/assets/impressum';
 
 
 export default {
     components: { EButton, EInput, MessageList },
     data() {
         return {
-            messageData: messageData
+            messageData: messageData,
+            impressum: impressum
         }
     }
 }
@@ -30,13 +32,28 @@ export default {
             <div class="startpage__form">
                 <h3 class="startpage__form-text">Be the first to redefine online shopping with EIDOS!​</h3>
                 <EInput :class="{ 'startpage__input-email': true }" :placeholder="'Your email'" />
-                <EButton :class="{ 'startpage__btn-demo': true }" :title="'Request a Demo'" />
-                <EButton :class="{ 'startpage__btn-demo': true }" :title="'Impressum'" />
+                <EButton :class="{ 'startpage__btn-demo': true }" :title="'Join the waitlist'" />
+                <EButton :class="{ 'startpage__btn-impressum': true }" :title="'Imprint'" data-bs-toggle="modal"
+                    data-bs-target="#impressumModal" />
             </div>
         </div>
         <div class="startpage__body-visuals">
             <MessageList class="langin__messages-list" :messages="messageData" :is-animated="true"
                 :message-style="'landing-example-messages'" />
+        </div>
+    </div>
+    <div class="modal fade" id="impressumModal" tabindex="-1" aria-labelledby="impressumModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-scrollable">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="impressumModalLabel">Impressum</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <!-- Render impressum.ts -->
+                    <div v-html="impressum"></div>
+                </div>
+            </div>
         </div>
     </div>
 </template>
