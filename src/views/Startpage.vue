@@ -1,10 +1,17 @@
 <script lang="ts">
+import { messageData } from '@/assets/MessageDataLanding.ts';
 import EButton from '@/components/EButton.vue';
 import EInput from '@/components/EInput.vue';
+import MessageList from '@/components/MessageList.vue';
 
 
 export default {
-    components: { EButton, EInput }
+    components: { EButton, EInput, MessageList },
+    data() {
+        return {
+            messageData: messageData
+        }
+    }
 }
 </script>
 
@@ -12,32 +19,33 @@ export default {
     <div class="startpage__body">
         <div class="startpage__info">
             <header class="startpage__header header-startpage">
-                <div class="header-startpage__logo">
-                    <img src="/startpage/logo.svg" alt="logo">
-                </div>
                 <div class="header-startpage__name">EIDOS</div>
+                <div class="">visual shopping assistant</div>
             </header>
             <div class="startpage__content">
-                <h1 class="startpage__title">Lost in online Shopping?
-                    Let us help you find exactly what you want!
-                    <br>
-                    EIDOS: Your Personal Shopping Assistant!
-                </h1>
-                <div class="startpage__undertitle">Experience the Future of Online Shopping:</div>
+                <h1 class="startpage__title">Struggling to find products that match your style?</h1>
+                <h2 class="startpage__undertitle">EIDOS is your personal shopping assistant to discover exactly what you
+                    want — effortlessly and smarter</h2>
             </div>
             <div class="startpage__form">
+                <h3 class="startpage__form-text">Be the first to redefine online shopping with EIDOS!​</h3>
                 <EInput :class="{ 'startpage__input-email': true }" :placeholder="'Your email'" />
                 <EButton :class="{ 'startpage__btn-demo': true }" :title="'Request a Demo'" />
+                <EButton :class="{ 'startpage__btn-demo': true }" :title="'Impressum'" />
             </div>
         </div>
         <div class="startpage__body-visuals">
-            <div class="startpage__bg-image"></div>
-            <div class="info-startpage__play-btn"></div>
+            <MessageList class="langin__messages-list" :messages="messageData" :is-animated="true"
+                :message-style="'landing-example-messages'" />
         </div>
     </div>
 </template>
 
 <style scoped>
+.langin__messages-list {
+    width: 100%;
+}
+
 .startpage__form {
     display: flex;
     flex-direction: column;
@@ -46,12 +54,13 @@ export default {
 
 .header-startpage__name {
     font-weight: 600;
-    font-size: 22px;
+    font-size: 28px;
     line-height: 26.4px;
 }
 
 .startpage__content {
     margin: 185px 0px;
+    flex: 1 1 100%;
 }
 
 .startpage__title {
@@ -64,11 +73,17 @@ export default {
 .startpage__undertitle {
     margin-top: 24px;
     font-weight: 400;
+    font-size: 24px;
+    line-height: 23.4px;
+}
+
+.startpage__form-text {
+    font-weight: 400;
     font-size: 18px;
     line-height: 23.4px;
 }
 
-.startpage__bg-image {
+.startpage__body-visuals {
     background-image: url('/startpage/right-visual-bg.jpeg');
     background-size: cover;
     background-position: center;
@@ -89,6 +104,8 @@ export default {
 
 .startpage__info {
     flex: 1 1 50%;
+    display: flex;
+    flex-direction: column;
 }
 
 .startpage__body-visuals {
@@ -101,7 +118,7 @@ export default {
 
 .header-startpage {
     display: flex;
-    align-items: center;
+    flex-direction: column;
 }
 
 .header-startpage__logo {

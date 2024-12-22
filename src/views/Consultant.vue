@@ -33,6 +33,7 @@ export default {
                 messageData.message.content.replace(regex, ' ').trim()
             }
             messageData.sender = sender
+            messageData.id = this.messages.length + 1
             this.messages.push(messageData);
         },
         createMessageData(content: string, contentType: string, sender: string) {
@@ -66,7 +67,7 @@ export default {
     <div class="consultant__body">
         <div class="chat-container">
             <div class="chat-box">
-                <MessageList :messages="messages" />
+                <MessageList :messages="messages" :message-style="'consultant-message'" />
             </div>
             <div class="consultant__form">
                 <EInput :class="{ 'consultant__input': true }" :is-form-disabled="isFormDisabled"
