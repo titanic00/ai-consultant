@@ -19,10 +19,11 @@ export default {
 
 <template>
     <div class="startpage__body">
+
         <div class="startpage__info">
             <header class="startpage__header header-startpage">
                 <div class="header-startpage__name">EIDOS</div>
-                <div class="">visual shopping assistant</div>
+                <div class="header-startpage__text">visual shopping assistant</div>
             </header>
             <div class="startpage__content">
                 <h1 class="startpage__title">Struggling to find products that match your style?</h1>
@@ -71,32 +72,36 @@ export default {
 
 .header-startpage__name {
     font-weight: 600;
-    font-size: 28px;
-    line-height: 26.4px;
+    font-size: clamp(18px, 5vw, 28px);
+    line-height: clamp(20px, 1vw, 26.4px);
+}
+
+.header-startpage__text {
+    font-size: clamp(12px, 3vw, 16px);
 }
 
 .startpage__content {
-    margin: 185px 0px;
+    margin: clamp(80px, 10vh, 185px) 0px;
     flex: 1 1 100%;
 }
 
 .startpage__title {
     font-weight: 400;
-    font-size: 48px;
-    line-height: 57.6px;
+    font-size: clamp(24px, 4vw, 48px);
+    line-height: clamp(28px, 5vw, 57.6px);
     max-width: 700px;
 }
 
 .startpage__undertitle {
     margin-top: 24px;
     font-weight: 400;
-    font-size: 24px;
+    font-size: clamp(18px, 1.5vw, 24px);
     line-height: 23.4px;
 }
 
 .startpage__form-text {
     font-weight: 400;
-    font-size: 18px;
+    font-size: clamp(16px, 1vh, 18px);
     line-height: 23.4px;
 }
 
@@ -115,7 +120,7 @@ export default {
     display: flex;
     justify-content: space-between;
     padding: 12px;
-    gap: 38px;
+    gap: clamp(15px, 1vw, 38px);
     height: 100vh;
 }
 
@@ -127,6 +132,8 @@ export default {
 
 .startpage__body-visuals {
     flex: 1 1 50%;
+    overflow-y: scroll;
+    min-height: 100%;
 }
 
 .startpage__header {
@@ -138,8 +145,22 @@ export default {
     flex-direction: column;
 }
 
-.header-startpage__logo {
-    height: 32px;
-    width: 32px;
+@media screen and (max-width: 899px) {
+    .startpage__body {
+        display: flex;
+        flex-direction: column;
+    }
+
+    .startpage__info {
+        order: 2;
+    }
+
+    .startpage__body-visuals {
+        order: 1
+    }
+
+    .startpage__content {
+        margin-top: 15px;
+    }
 }
 </style>
