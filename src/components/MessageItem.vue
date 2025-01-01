@@ -33,9 +33,9 @@ export default {
     max-width: 70%;
     word-wrap: break-word;
     margin: clamp(10px, 5vw, 30px);
-    font-size: clamp(15px, 3vw, 18px);
+    font-size: clamp(18px, 3vw, 24px);
     font-weight: 400;
-    line-height: clamp(20px, 2.5vh, 34px);
+    line-height: clamp(24px, 4vh, 32px);
 }
 
 .landing-example-messages.user {
@@ -57,6 +57,12 @@ export default {
     padding: 10px;
     border-radius: 10px;
     word-break: break-word;
+}
+
+@media screen and (max-width: 1280px) and (max-height: 800px) {
+    .landing-example-messages {
+        font-size: clamp(18px, 3vw, 22px);
+    }
 }
 
 /* Consultant.vue */

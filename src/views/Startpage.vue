@@ -19,9 +19,14 @@ export default {
 
 <template>
     <div class="startpage__body">
-
+        <!-- Header for the screen sizes below 899px -->
+        <header class="startpage__header header-startpage header--below-899">
+            <div class="header-startpage__name">EIDOS</div>
+            <div class="header-startpage__text">visual shopping assistant</div>
+        </header>
         <div class="startpage__info">
-            <header class="startpage__header header-startpage">
+            <!-- Header for the screen sizes above 899px -->
+            <header class="startpage__header header-startpage header--above-899">
                 <div class="header-startpage__name">EIDOS</div>
                 <div class="header-startpage__text">visual shopping assistant</div>
             </header>
@@ -39,7 +44,7 @@ export default {
             </div>
         </div>
         <div class="startpage__body-visuals">
-            <MessageList class="langin__messages-list" :messages="messageData" :is-animated="true"
+            <MessageList class="landing__messages-list" :messages="messageData" :is-animated="true"
                 :message-style="'landing-example-messages'" />
         </div>
     </div>
@@ -60,7 +65,7 @@ export default {
 </template>
 
 <style scoped>
-.langin__messages-list {
+.landing__messages-list {
     width: 100%;
 }
 
@@ -72,12 +77,12 @@ export default {
 
 .header-startpage__name {
     font-weight: 600;
-    font-size: clamp(18px, 5vw, 28px);
+    font-size: clamp(20px, 5vw, 34px);
     line-height: clamp(20px, 1vw, 26.4px);
 }
 
 .header-startpage__text {
-    font-size: clamp(12px, 3vw, 16px);
+    font-size: clamp(14px, 3vw, 24px);
 }
 
 .startpage__content {
@@ -87,21 +92,23 @@ export default {
 
 .startpage__title {
     font-weight: 400;
-    font-size: clamp(24px, 4vw, 48px);
-    line-height: clamp(28px, 5vw, 57.6px);
+    font-size: clamp(24px, 4vw, 60px);
+    line-height: clamp(30px, 5vw, 70px);
     max-width: 700px;
+    margin-bottom: 120px;
+    margin-bottom: clamp(70px, 1.5vh, 120px);
 }
 
 .startpage__undertitle {
     margin-top: 24px;
     font-weight: 400;
-    font-size: clamp(18px, 1.5vw, 24px);
-    line-height: 23.4px;
+    font-size: clamp(18px, 1.5vw, 32px);
+    line-height: clamp(30px, 3vh, 36px);
 }
 
 .startpage__form-text {
     font-weight: 400;
-    font-size: clamp(16px, 1vh, 18px);
+    font-size: clamp(16px, 1.5vh, 24px);
     line-height: 23.4px;
 }
 
@@ -145,7 +152,19 @@ export default {
     flex-direction: column;
 }
 
+.header--below-899 {
+    display: none;
+}
+
 @media screen and (max-width: 899px) {
+    .header--below-899 {
+        display: block;
+    }
+
+    .header--above-899 {
+        display: none;
+    }
+
     .startpage__body {
         display: flex;
         flex-direction: column;
