@@ -39,7 +39,7 @@ export default {
 .startpage__input-email input {
     display: block;
     width: 100%;
-    padding: 12px;
+    padding: clamp(6px, 1vw, 12px);
     border-radius: 12px;
     text-align: center;
     border: 1px solid #C7B6B6;

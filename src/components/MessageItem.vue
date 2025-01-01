@@ -26,17 +26,16 @@ export default {
 /* Startpage.vue */
 /* ------------------------------------------------------------------------------ */
 .landing-example-messages {
-    padding: 10px;
-    margin: 10px 0;
+    padding: clamp(3px, 0.5vw, 10px);
     background-color: #9b4dda;
     color: #fff;
     border-radius: 10px;
     max-width: 70%;
     word-wrap: break-word;
-    margin: 30px;
-    font-size: 18px;
+    margin: clamp(10px, 5vw, 30px);
+    font-size: clamp(15px, 3vw, 18px);
     font-weight: 400;
-    line-height: 20px;
+    line-height: clamp(20px, 2.5vh, 34px);
 }
 
 .landing-example-messages.user {

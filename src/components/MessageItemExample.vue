@@ -24,8 +24,8 @@ export default {
 
 .landing-example-messages img {
     border-radius: 10px;
-    width: 250px;
-    height: 250px;
+    width: clamp(100px, 17vw, 250px);
+    height: clamp(100px, 17vw, 250px);
 }
 
 .landing-example-messages.user {
