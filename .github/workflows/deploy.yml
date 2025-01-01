@@ -6,8 +6,8 @@ on:
 
 env:
   PROJECT_ID: ${{ secrets.GCP_PROJECT_ID }}
-  SERVICE_NAME: frontend-service
-  REGION: europe-west3
+  SERVICE_NAME: myeidos-frontend
+  REGION: europe-west1
 
 jobs:
   deploy:
