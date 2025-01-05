@@ -11,7 +11,7 @@ export default {
                 {{ messageData.message.content }}
             </div>
         </div>
-        <!-- the difference between these blocks is in the path to the image in the JSON -->
+        <!-- the difference between these blocks is in the path to the image in JSON -->
         <div :class="`${messageStyle}__img`" v-if="messageData.message.type === 'create'">
             <img :src="messageData.message.additional.designUrl" alt="Generated Product Design" />
         </div>
@@ -26,26 +26,28 @@ export default {
 /* Startpage.vue */
 /* ------------------------------------------------------------------------------ */
 .landing-example-messages {
-    padding: clamp(3px, 0.5vw, 10px);
+    padding: clamp(5px, 1vw, 15px);
     background-color: #9b4dda;
     color: #fff;
-    border-radius: 10px;
-    max-width: 70%;
+    border-radius: 12px;
+    max-width: 60%;
     word-wrap: break-word;
-    margin: clamp(10px, 5vw, 30px);
-    font-size: clamp(18px, 3vw, 24px);
+    margin: clamp(15px, 4vw, 25px);
+    font-size: clamp(20px, 3vw, 28px);
     font-weight: 400;
-    line-height: clamp(24px, 4vh, 32px);
+    line-height: clamp(28px, 4.5vh, 36px);
 }
 
 .landing-example-messages.user {
     text-align: right;
     margin-left: auto;
+    max-width: 60%;
 }
 
 .landing-example-messages.assistant {
     text-align: left;
     margin-right: auto;
+    max-width: 60%;
 }
 
 .landing-example-messages .message-block {
@@ -54,16 +56,47 @@ export default {
     word-wrap: break-word;
     word-break: break-word;
     hyphens: auto;
-    padding: 10px;
-    border-radius: 10px;
-    word-break: break-word;
+    padding: 12px;
+    border-radius: 12px;
 }
 
-@media screen and (max-width: 1280px) and (max-height: 800px) {
+@media (max-width: 1024px) {
     .landing-example-messages {
-        font-size: clamp(18px, 3vw, 22px);
+        max-width: 75%;
+        margin: clamp(12px, 5vw, 20px);
+        font-size: clamp(18px, 3.5vw, 24px);
+        line-height: clamp(26px, 5vh, 34px);
+    }
+
+    .landing-example-messages.user,
+    .landing-example-messages.assistant {
+        max-width: 75%;
+    }
+
+    .landing-example-messages .message-block {
+        padding: 10px;
     }
 }
+
+@media (max-width: 768px) {
+    .landing-example-messages {
+        max-width: 90%;
+        margin: clamp(10px, 6vw, 15px);
+        font-size: clamp(16px, 4.5vw, 22px);
+        line-height: clamp(24px, 6vh, 30px);
+    }
+
+    .landing-example-messages.user,
+    .landing-example-messages.assistant {
+        max-width: 90%;
+    }
+
+    .landing-example-messages .message-block {
+        padding: 8px;
+    }
+}
+
+
 
 /* Consultant.vue */
 /* ------------------------------------------------------------------------------ */

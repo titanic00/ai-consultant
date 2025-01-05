@@ -36,7 +36,6 @@ export default {
                     want — effortlessly and smarter</h2>
             </div>
             <div class="startpage__form">
-                <h3 class="startpage__form-text">Be the first to redefine online shopping with EIDOS!​</h3>
                 <EInput :class="{ 'startpage__input-email': true }" :placeholder="'Your email'" />
                 <EButton :class="{ 'startpage__btn-demo': true }" :title="'Join the waitlist'" />
                 <EButton :class="{ 'startpage__btn-impressum': true }" :title="'Imprint'" data-bs-toggle="modal"
@@ -72,44 +71,44 @@ export default {
 .startpage__form {
     display: flex;
     flex-direction: column;
-    gap: 12px
+    gap: clamp(10px, 2vw, 20px);
 }
 
 .header-startpage__name {
     font-weight: 600;
-    font-size: clamp(20px, 5vw, 34px);
-    line-height: clamp(20px, 1vw, 26.4px);
+    font-size: clamp(22px, 5vw, 36px);
+    line-height: clamp(22px, 2vw, 30px);
+    color: #9b4dda;
 }
 
 .header-startpage__text {
-    font-size: clamp(14px, 3vw, 24px);
+    font-size: clamp(16px, 3vw, 26px);
 }
 
 .startpage__content {
-    margin: clamp(80px, 10vh, 185px) 0px;
+    margin: clamp(50px, 8vh, 150px) 0px;
     flex: 1 1 100%;
 }
 
 .startpage__title {
     font-weight: 400;
-    font-size: clamp(24px, 4vw, 60px);
-    line-height: clamp(30px, 5vw, 70px);
+    font-size: clamp(26px, 5vw, 62px);
+    line-height: clamp(32px, 6vw, 72px);
     max-width: 700px;
-    margin-bottom: 120px;
-    margin-bottom: clamp(70px, 1.5vh, 120px);
+    margin-bottom: clamp(70px, 2vh, 120px);
 }
 
 .startpage__undertitle {
     margin-top: 24px;
-    font-weight: 400;
-    font-size: clamp(18px, 1.5vw, 32px);
-    line-height: clamp(30px, 3vh, 36px);
+    font-weight: 600;
+    font-size: clamp(20px, 2vw, 34px);
+    line-height: clamp(32px, 4vh, 38px);
 }
 
 .startpage__form-text {
     font-weight: 400;
-    font-size: clamp(16px, 1.5vh, 24px);
-    line-height: 23.4px;
+    font-size: clamp(18px, 2vh, 26px);
+    line-height: clamp(22px, 3vh, 28px);
 }
 
 .startpage__body-visuals {
@@ -118,7 +117,9 @@ export default {
     background-position: center;
     background-repeat: no-repeat;
     width: 100%;
-    height: 100%;
+    flex: 1 1 50%;
+    overflow-y: scroll;
+    min-height: 100%;
     border-top-right-radius: 24px;
     border-bottom-right-radius: 24px;
 }
@@ -126,8 +127,8 @@ export default {
 .startpage__body {
     display: flex;
     justify-content: space-between;
-    padding: 12px;
-    gap: clamp(15px, 1vw, 38px);
+    padding: clamp(20px, 3vw, 40px) 12px 12px clamp(20px, 3vw, 40px);
+    gap: clamp(20px, 2vw, 40px);
     height: 100vh;
 }
 
@@ -137,14 +138,8 @@ export default {
     flex-direction: column;
 }
 
-.startpage__body-visuals {
-    flex: 1 1 50%;
-    overflow-y: scroll;
-    min-height: 100%;
-}
-
 .startpage__header {
-    gap: 5px
+    gap: clamp(5px, 1vw, 10px);
 }
 
 .header-startpage {
