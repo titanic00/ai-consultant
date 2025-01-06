@@ -4,6 +4,7 @@ import EButton from '@/components/EButton.vue';
 import EInput from '@/components/EInput.vue';
 import MessageList from '@/components/MessageList.vue';
 import { impressum } from '@/assets/impressum';
+import emailjs from '@emailjs/browser';
 
 
 export default {
@@ -11,7 +12,23 @@ export default {
     data() {
         return {
             messageData: messageData,
-            impressum: impressum
+            impressum: impressum,
+            email: ''
+        }
+    },
+    methods: {
+        sendEmail() {
+            emailjs.send('service_u8i7q0o', 'template_64wit4a', {
+                userEmail: this.email,
+            }, 'DdBf0xh09O6uBNRuY')
+                .then(() => {
+                    this.email = ''
+                })
+            // .then((response) => {
+            //     console.log('Письмо успешно отправлено!', response.status, response.text);
+            // }, (error) => {
+            //     console.log('Ошибка при отправке:', error);
+            // });
         }
     }
 }
@@ -36,8 +53,8 @@ export default {
                     want — effortlessly and smarter</h2>
             </div>
             <div class="startpage__form">
-                <EInput :class="{ 'startpage__input-email': true }" :placeholder="'Your email'" />
-                <EButton :class="{ 'startpage__btn-demo': true }" :title="'Join the waitlist'" />
+                <EInput :class="{ 'startpage__input-email': true }" :placeholder="'Your email'" v-model:input="email" />
+                <EButton :class="{ 'startpage__btn-demo': true }" :title="'Join the waitlist'" @click="sendEmail" />
                 <EButton :class="{ 'startpage__btn-impressum': true }" :title="'Imprint'" data-bs-toggle="modal"
                     data-bs-target="#impressumModal" />
             </div>
@@ -92,8 +109,8 @@ export default {
 
 .startpage__title {
     font-weight: 400;
-    font-size: 48px;
-    line-height: 54px;
+    font-size: 42px;
+    line-height: 47px;
     max-width: 700px;
     margin-bottom: 120px;
 }
@@ -101,7 +118,7 @@ export default {
 .startpage__undertitle {
     margin-top: 24px;
     font-weight: 600;
-    font-size: 27px;
+    font-size: 24px;
     line-height: 34px;
 }
 

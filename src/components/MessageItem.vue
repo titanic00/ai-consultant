@@ -26,16 +26,16 @@ export default {
 /* Startpage.vue */
 /* ------------------------------------------------------------------------------ */
 .landing-example-messages {
-    padding: 10px;
+    padding: 8px;
     background-color: #9b4dda;
     color: #fff;
     border-radius: 12px;
     max-width: 60%;
     word-wrap: break-word;
-    margin: 14px;
-    font-size: 24px;
+    margin: 12px;
+    font-size: 18px;
     font-weight: 400;
-    line-height: 30px;
+    line-height: 27px;
 }
 
 @media (min-width: 2561px) {
