@@ -18,12 +18,14 @@ export default {
     },
     methods: {
         sendEmail() {
-            emailjs.send('service_bqxgjgz', 'template_64wit4a', {
-                userEmail: this.email,
-            }, 'DdBf0xh09O6uBNRuY')
-                .then(() => {
-                    this.email = ''
-                })
+            if (this.email !== '') {
+                emailjs.send('service_bqxgjgz', 'template_64wit4a', {
+                    userEmail: this.email,
+                }, 'DdBf0xh09O6uBNRuY')
+                    .then(() => {
+                        this.email = ''
+                    })
+            }
         },
     }
 }
