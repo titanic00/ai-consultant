@@ -38,6 +38,13 @@ export default {
     line-height: 27px;
 }
 
+@media (max-width: 767px) {
+    .landing-example-messages {
+        font-size: 16px;
+        line-height: 27px;
+    }
+}
+
 @media (min-width: 2561px) {
     .landing-example-messages {
         font-size: 36px;

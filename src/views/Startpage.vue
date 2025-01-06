@@ -102,6 +102,12 @@ export default {
     flex: 1 1 100%;
 }
 
+@media (max-width: 767px) {
+    .startpage__content {
+        margin: 80px 0px;
+    }
+}
+
 .startpage__title {
     font-weight: 400;
     font-size: 42px;
@@ -135,7 +141,30 @@ export default {
     justify-content: space-between;
     padding: 32px 12px 12px 32px;
     gap: 20px;
-    height: 100vh;
+    min-height: 100vh;
+}
+
+@media (max-width: 1365px) {
+    .startpage__body {
+        padding: 20px 12px 12px 20px;
+    }
+}
+
+@media (max-width: 767px) {
+    .startpage__body {
+        padding: 12px;
+    }
+
+    .startpage__title {
+        margin-bottom: 80px;
+        font-size: 36px;
+        line-height: 42px;
+    }
+
+    .startpage__undertitle {
+        font-size: 20px;
+        line-height: 24px;
+    }
 }
 
 .startpage__info {
