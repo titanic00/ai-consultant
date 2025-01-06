@@ -18,18 +18,13 @@ export default {
     },
     methods: {
         sendEmail() {
-            emailjs.send('service_u8i7q0o', 'template_64wit4a', {
+            emailjs.send('service_bqxgjgz', 'template_64wit4a', {
                 userEmail: this.email,
             }, 'DdBf0xh09O6uBNRuY')
                 .then(() => {
                     this.email = ''
                 })
-            // .then((response) => {
-            //     console.log('Письмо успешно отправлено!', response.status, response.text);
-            // }, (error) => {
-            //     console.log('Ошибка при отправке:', error);
-            // });
-        }
+        },
     }
 }
 </script>
@@ -53,7 +48,7 @@ export default {
                     want — effortlessly and smarter</h2>
             </div>
             <div class="startpage__form">
-                <EInput :class="{ 'startpage__input-email': true }" :placeholder="'Your email'" v-model:input="email" />
+                <EInput :class="{ 'startpage__input-email': true }" :placeholder="'Your email'" v-model="email" />
                 <EButton :class="{ 'startpage__btn-demo': true }" :title="'Join the waitlist'" @click="sendEmail" />
                 <EButton :class="{ 'startpage__btn-impressum': true }" :title="'Imprint'" data-bs-toggle="modal"
                     data-bs-target="#impressumModal" />

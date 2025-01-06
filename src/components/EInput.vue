@@ -1,16 +1,16 @@
 <script lang="ts">
-
 export default {
     props: {
+        modelValue: String,
         isFormDisabled: Boolean,
         placeholder: String
     },
-    emits: ['update:input'],
+    emits: ['update:modelValue'],
     methods: {
         onInput(event: Event) {
-            const inputElement = event.target as HTMLInputElement
-            const inputValue = inputElement.value
-            this.$emit('update:input', inputValue)
+            const inputElement = event.target as HTMLInputElement;
+            const inputValue = inputElement.value;
+            this.$emit('update:modelValue', inputValue);
         }
     }
 }
@@ -18,7 +18,7 @@ export default {
 
 <template>
     <div class="einput__body">
-        <input type="text" @input="onInput($event)" :placeholder="placeholder"
+        <input type="text" :value="modelValue" @input="onInput($event)" :placeholder="placeholder"
             :class="isFormDisabled ? 'disabled' : ''" />
     </div>
 </template>
