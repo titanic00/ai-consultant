@@ -71,44 +71,38 @@ export default {
 .startpage__form {
     display: flex;
     flex-direction: column;
-    gap: clamp(10px, 2vw, 20px);
+    gap: 20px;
 }
 
 .header-startpage__name {
     font-weight: 600;
-    font-size: clamp(22px, 5vw, 36px);
-    line-height: clamp(22px, 2vw, 30px);
+    font-size: 36px;
+    line-height: 30px;
     color: #9b4dda;
 }
 
 .header-startpage__text {
-    font-size: clamp(16px, 3vw, 26px);
+    font-size: 26px;
 }
 
 .startpage__content {
-    margin: clamp(50px, 8vh, 150px) 0px;
+    margin: 150px 0px;
     flex: 1 1 100%;
 }
 
 .startpage__title {
     font-weight: 400;
-    font-size: clamp(26px, 5vw, 62px);
-    line-height: clamp(32px, 6vw, 72px);
+    font-size: 62px;
+    line-height: 72px;
     max-width: 700px;
-    margin-bottom: clamp(70px, 2vh, 120px);
+    margin-bottom: 120px;
 }
 
 .startpage__undertitle {
     margin-top: 24px;
     font-weight: 600;
-    font-size: clamp(20px, 2vw, 34px);
-    line-height: clamp(32px, 4vh, 38px);
-}
-
-.startpage__form-text {
-    font-weight: 400;
-    font-size: clamp(18px, 2vh, 26px);
-    line-height: clamp(22px, 3vh, 28px);
+    font-size: 34px;
+    line-height: 38px;
 }
 
 .startpage__body-visuals {
@@ -127,8 +121,8 @@ export default {
 .startpage__body {
     display: flex;
     justify-content: space-between;
-    padding: clamp(20px, 3vw, 40px) 12px 12px clamp(20px, 3vw, 40px);
-    gap: clamp(20px, 2vw, 40px);
+    padding: 40px 12px 12px 40px;
+    gap: 40px;
     height: 100vh;
 }
 
@@ -139,7 +133,7 @@ export default {
 }
 
 .startpage__header {
-    gap: clamp(5px, 1vw, 10px);
+    gap: 10px;
 }
 
 .header-startpage {
@@ -149,6 +143,28 @@ export default {
 
 .header--below-899 {
     display: none;
+}
+
+@media (min-width: 2561px) {
+    .header-startpage__name {
+        font-size: 60px;
+        line-height: 50px;
+    }
+
+    .header-startpage__text {
+        font-size: 34px;
+    }
+
+    .startpage__title {
+        font-size: 84px;
+        line-height: 94px;
+        max-width: 1200px;
+    }
+
+    .startpage__undertitle {
+        font-size: 44px;
+        line-height: 48px;
+    }
 }
 
 @media screen and (max-width: 899px) {

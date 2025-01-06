@@ -41,9 +41,9 @@ export default {
     background-color: #050505;
     font-weight: 500;
     font-size: 18px;
-    line-height: clamp(20px, 1vw, 27px);
+    line-height: 27px;
     color: #C7B6B6;
-    padding: clamp(6px, 1vw, 12px);
+    padding: 12px;
     border-radius: 12px;
     border: 1px solid #050505;
     cursor: pointer;
@@ -61,7 +61,7 @@ export default {
     display: inline-block;
     font-weight: 500;
     font-size: 18px;
-    line-height: clamp(20px, 1vw, 27px);
+    line-height: 27px;
     color: #C7B6B6;
     cursor: pointer;
     border: none;
@@ -71,5 +71,18 @@ export default {
 
 .startpage__btn-impressum button:hover {
     color: #7e7373;
+}
+
+@media (min-width: 2561px) {
+    .startpage__btn-demo button {
+        font-size: 27px;
+        padding: 16px;
+        line-height: 36px;
+    }
+
+    .startpage__btn-impressum button {
+        font-size: 27px;
+        line-height: 27px;
+    }
 }
 </style>

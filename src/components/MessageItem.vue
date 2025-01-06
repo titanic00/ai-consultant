@@ -26,16 +26,29 @@ export default {
 /* Startpage.vue */
 /* ------------------------------------------------------------------------------ */
 .landing-example-messages {
-    padding: clamp(5px, 1vw, 15px);
+    padding: 15px;
     background-color: #9b4dda;
     color: #fff;
     border-radius: 12px;
     max-width: 60%;
     word-wrap: break-word;
-    margin: clamp(15px, 4vw, 25px);
-    font-size: clamp(20px, 3vw, 28px);
+    margin: 25px;
+    font-size: 28px;
     font-weight: 400;
-    line-height: clamp(28px, 4.5vh, 36px);
+    line-height: 36px;
+}
+
+@media (min-width: 2561px) {
+    .landing-example-messages {
+        font-size: 36px;
+        line-height: 44px;
+        padding: 20px;
+    }
+
+    .landing-example-messages__img img {
+        width: 500px;
+        height: 500px;
+    }
 }
 
 .landing-example-messages.user {
@@ -59,44 +72,6 @@ export default {
     padding: 12px;
     border-radius: 12px;
 }
-
-@media (max-width: 1024px) {
-    .landing-example-messages {
-        max-width: 75%;
-        margin: clamp(12px, 5vw, 20px);
-        font-size: clamp(18px, 3.5vw, 24px);
-        line-height: clamp(26px, 5vh, 34px);
-    }
-
-    .landing-example-messages.user,
-    .landing-example-messages.assistant {
-        max-width: 75%;
-    }
-
-    .landing-example-messages .message-block {
-        padding: 10px;
-    }
-}
-
-@media (max-width: 768px) {
-    .landing-example-messages {
-        max-width: 90%;
-        margin: clamp(10px, 6vw, 15px);
-        font-size: clamp(16px, 4.5vw, 22px);
-        line-height: clamp(24px, 6vh, 30px);
-    }
-
-    .landing-example-messages.user,
-    .landing-example-messages.assistant {
-        max-width: 90%;
-    }
-
-    .landing-example-messages .message-block {
-        padding: 8px;
-    }
-}
-
-
 
 /* Consultant.vue */
 /* ------------------------------------------------------------------------------ */

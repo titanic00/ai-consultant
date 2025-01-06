@@ -53,4 +53,15 @@ export default {
     color: #C7B6B6;
     text-align: center;
 }
+
+@media (min-width: 2561px) {
+    .startpage__input-email input {
+        padding: 16px;
+    }
+
+    .startpage__input-email input::placeholder {
+        font-size: 27px;
+        line-height: 36px;
+    }
+}
 </style>
