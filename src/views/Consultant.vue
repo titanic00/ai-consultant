@@ -27,7 +27,6 @@ export default {
     methods: {
         displayMessage(messageData: MessageData, sender: string) {
             // format the text: delete sentence that include a link and words like 'follow the link'
-            // the link will be pushed at the end of message in MessageItem Component
             if (messageData.message.type === 'create' || messageData.message.type === 'match') {
                 const regex = /[^.!?]*:[^.!?]*\[.*?\]\(https?:\/\/[^\s]+\)[^.!?]*[.!?]?/g;
                 messageData.message.content.replace(regex, ' ').trim()

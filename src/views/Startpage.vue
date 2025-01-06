@@ -76,13 +76,13 @@ export default {
 
 .header-startpage__name {
     font-weight: 600;
-    font-size: 36px;
+    font-size: 28px;
     line-height: 30px;
     color: #9b4dda;
 }
 
 .header-startpage__text {
-    font-size: 26px;
+    font-size: 20px;
 }
 
 .startpage__content {
@@ -92,8 +92,8 @@ export default {
 
 .startpage__title {
     font-weight: 400;
-    font-size: 62px;
-    line-height: 72px;
+    font-size: 48px;
+    line-height: 54px;
     max-width: 700px;
     margin-bottom: 120px;
 }
@@ -101,8 +101,8 @@ export default {
 .startpage__undertitle {
     margin-top: 24px;
     font-weight: 600;
-    font-size: 34px;
-    line-height: 38px;
+    font-size: 27px;
+    line-height: 34px;
 }
 
 .startpage__body-visuals {
@@ -121,8 +121,8 @@ export default {
 .startpage__body {
     display: flex;
     justify-content: space-between;
-    padding: 40px 12px 12px 40px;
-    gap: 40px;
+    padding: 32px 12px 12px 32px;
+    gap: 20px;
     height: 100vh;
 }
 
@@ -130,10 +130,6 @@ export default {
     flex: 1 1 50%;
     display: flex;
     flex-direction: column;
-}
-
-.startpage__header {
-    gap: 10px;
 }
 
 .header-startpage {
