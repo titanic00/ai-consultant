@@ -30,6 +30,7 @@ export default {
     border: none;
     border-radius: 4px;
     cursor: pointer;
+    font-size: 14px;
 }
 
 /* Startpage.vue */

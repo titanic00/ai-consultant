@@ -1,7 +1,7 @@
-export default interface MessageData {
+export default interface MessageData<T = Record<string, any>> {
     id?: number,
     message: {
-        additional: {},
+        additional: T,
         content: string,
         type: string
     },

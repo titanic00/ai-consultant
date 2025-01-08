@@ -30,10 +30,15 @@ export default {
 
 .consultant__input input {
     width: 100%;
-    padding: 10px;
+    padding: 9.5px;
     margin-right: 10px;
     border: 1px solid #ccc;
     border-radius: 4px;
+    font-size: 14px;
+}
+
+.consultant__input input::placeholder {
+    font-size: 14px;
 }
 
 .startpage__input-email input {

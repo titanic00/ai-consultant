@@ -12,9 +12,9 @@ export default {
             </div>
         </div>
         <!-- the difference between these blocks is in the path to the image in JSON -->
-        <div :class="`${messageStyle}__img`" v-if="messageData.message.type === 'create'">
+        <!-- <div :class="`${messageStyle}__img`" v-if="messageData.message.type === 'create'">
             <img :src="messageData.message.additional.designUrl" alt="Generated Product Design" />
-        </div>
+        </div> -->
         <div :class="`${messageStyle}__img`" v-for="match in messageData.message.additional" :key="match.id"
             :match="match" v-if="messageData.message.type === 'match'">
             <img class="message-additional__img" :src="match[4].image_url" alt="Matched Design Product Image">
@@ -92,7 +92,8 @@ export default {
     padding: 10px;
     border-radius: 10px;
     word-break: break-word;
-    line-height: 20px;
+    font-size: 14px;
+    line-height: 18px;
 }
 
 .consultant-message {
