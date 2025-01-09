@@ -97,30 +97,36 @@ export default {
 }
 
 .consultant__body {
-    margin: 0px auto;
-    background-color: #fff;
+    display: flex;
+    flex-direction: column;
+    height: 100vh;
+    margin: 0 auto;
     max-width: 600px;
+    background-color: #fff;
 }
 
 .consultant__form {
     display: flex;
-    gap: 15px
+    gap: 15px;
+    flex-shrink: 0;
+    padding: 10px 0;
+    background-color: #f9f9f9;
 }
 
 .chat-container {
-    max-width: 600px;
-    margin: 0px auto;
+    display: flex;
+    flex-direction: column;
+    flex-grow: 1;
     background-color: white;
     padding: 15px;
     border-radius: 0px 0px 8px 8px;
     box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
-    height: 100vh;
 }
 
 .chat-box {
-    overflow-y: scroll;
+    overflow-y: auto;
+    flex-grow: 1;
     border-bottom: 1px solid #ccc;
-    margin-bottom: 20px;
-    height: calc(100% - 120px);
+    margin-bottom: 15px;
 }
 </style>
