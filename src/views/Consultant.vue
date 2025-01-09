@@ -107,17 +107,6 @@ export default {
     position: relative;
 }
 
-.consultant__design::after {
-    position: absolute;
-    content: '';
-    width: 50px;
-    height: 2px;
-    background-color: #a9a9a9;
-    bottom: 5px;
-    left: 48%;
-    z-index: 1000;
-}
-
 .consultant__body {
     display: flex;
     flex-direction: column;
