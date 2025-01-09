@@ -12,7 +12,7 @@ export default {
             messages: [] as MessageData[],
             isFormDisabled: false,
             content: "",
-            backgroundImageUrl: 'https://storage.googleapis.com/dbassistant/createddesigns/20250107153931.jpg'
+            backgroundImageUrl: 'https://storage.googleapis.com/dbassistant/createddesigns/20250109151436.jpg'
         }
     },
     mounted() {
@@ -54,6 +54,7 @@ export default {
         sendMessage() {
             this.isFormDisabled = true
             const messageData = this.createMessageData(this.content, "userInput", "user");
+            this.content = ''
             newMessage(messageData).then((response) => {
                 this.isFormDisabled = false
                 if (response.message.additional.designUrl !== '' && Object.keys(response.message.additional).length !== 0) {
@@ -94,6 +95,7 @@ export default {
     width: 100%;
     background-size: cover;
     background-position: center;
+    flex-shrink: 0;
 }
 
 .consultant__body {
@@ -103,6 +105,7 @@ export default {
     margin: 0 auto;
     max-width: 600px;
     background-color: #fff;
+    overflow: hidden;
 }
 
 .consultant__form {
@@ -121,6 +124,7 @@ export default {
     padding: 15px;
     border-radius: 0px 0px 8px 8px;
     box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
+    overflow: hidden;
 }
 
 .chat-box {
@@ -128,5 +132,6 @@ export default {
     flex-grow: 1;
     border-bottom: 1px solid #ccc;
     margin-bottom: 15px;
+    height: auto;
 }
 </style>
