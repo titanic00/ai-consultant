@@ -114,12 +114,13 @@ export default {
     padding: 15px;
     border-radius: 0px 0px 8px 8px;
     box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
+    height: 100vh;
 }
 
 .chat-box {
-    height: 576px;
     overflow-y: scroll;
     border-bottom: 1px solid #ccc;
     margin-bottom: 20px;
+    height: calc(100% - 120px);
 }
 </style>
