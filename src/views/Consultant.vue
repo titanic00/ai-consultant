@@ -12,28 +12,31 @@ export default {
             messages: [] as MessageData[],
             isFormDisabled: false,
             content: "",
-            backgroundImageUrl: 'https://storage.googleapis.com/dbassistant/createddesigns/20250109151436.jpg'
+            backgroundImageUrl: 'https://storage.googleapis.com/dbassistant/createddesigns/20250109151436.jpg',
+            viewportHeight: window.innerHeight // Dynamic height calculation
         }
     },
     mounted() {
-        // Chat initialization: creating threadId
-        // Sentences to test the bot:
-        // Hallo, mach mir ein Sneaker Design: rote und grüne Farben, sportlich, Brands sind mir egal
-        // Bin damit zufrieden, zeig mir matches
+        // Adjust height on mount and on window resize
+        this.adjustViewportHeight();
+        window.addEventListener('resize', this.adjustViewportHeight);
+
         newThread().then((response) => {
             sessionStorage.setItem("thread_id", response.threadId);
             this.displayMessage(response, "assistant");
         });
     },
+    beforeDestroy() {
+        window.removeEventListener('resize', this.adjustViewportHeight);
+    },
     methods: {
+        adjustViewportHeight() {
+            // Dynamically adjust to avoid keyboard overlap issues
+            this.viewportHeight = window.innerHeight;
+        },
         displayMessage(messageData: MessageData, sender: string) {
-            // format the text: delete sentence that include a link and words like 'follow the link'
-            // if (messageData.message.type === 'create' || messageData.message.type === 'match') {
-            //     const regex = /[^.!?]*:[^.!?]*\[.*?\]\(https?:\/\/[^\s]+\)[^.!?]*[.!?]?/g;
-            //     messageData.message.content.replace(regex, ' ').trim()
-            // }
-            messageData.sender = sender
-            messageData.id = this.messages.length + 1
+            messageData.sender = sender;
+            messageData.id = this.messages.length + 1;
             this.messages.push(messageData);
         },
         createMessageData(content: string, contentType: string, sender: string) {
@@ -52,23 +55,23 @@ export default {
             return messageData;
         },
         sendMessage() {
-            this.isFormDisabled = true
+            this.isFormDisabled = true;
             const messageData = this.createMessageData(this.content, "userInput", "user");
-            this.content = ''
+            this.content = "";
             newMessage(messageData).then((response) => {
-                this.isFormDisabled = false
+                this.isFormDisabled = false;
                 if (response.message.additional.designUrl !== '' && Object.keys(response.message.additional).length !== 0) {
-                    this.backgroundImageUrl = response.message.additional.designUrl
+                    this.backgroundImageUrl = response.message.additional.designUrl;
                 }
                 this.displayMessage(response, "assistant");
             });
         }
     }
-}
+};
 </script>
 
 <template>
-    <div class="consultant">
+    <div class="consultant" :style="{ height: `${viewportHeight}px` }">
         <div class="consultant__body">
             <div class="consultant__design" :style="{ backgroundImage: `url('${backgroundImageUrl}')` }"></div>
             <div class="chat-container">
@@ -87,21 +90,38 @@ export default {
 </template>
 
 <style scoped>
-.consultant {}
+.consultant {
+    display: flex;
+    flex-direction: column;
+}
+
+.consultant__redesign {}
 
 .consultant__design {
     background-color: #f6f6f6;
-    height: 250px;
+    height: 300px;
     width: 100%;
     background-size: cover;
     background-position: center;
     flex-shrink: 0;
+    position: relative;
+}
+
+.consultant__design::after {
+    position: absolute;
+    content: '';
+    width: 50px;
+    height: 2px;
+    background-color: #a9a9a9;
+    bottom: 5px;
+    left: 48%;
+    z-index: 1000;
 }
 
 .consultant__body {
     display: flex;
     flex-direction: column;
-    height: 100vh;
+    height: 100%;
     margin: 0 auto;
     max-width: 600px;
     background-color: #fff;
