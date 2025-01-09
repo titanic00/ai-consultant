@@ -113,7 +113,6 @@ export default {
     gap: 15px;
     flex-shrink: 0;
     padding: 10px 0;
-    background-color: #f9f9f9;
 }
 
 .chat-container {

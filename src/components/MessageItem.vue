@@ -83,35 +83,39 @@ export default {
 /* Consultant.vue */
 /* ------------------------------------------------------------------------------ */
 
+.consultant-message {
+    padding: 5px;
+    margin: 5px 0;
+    display: flex;
+}
+
+.consultant-message.user {
+    justify-content: flex-end;
+}
+
+.consultant-message.assistant {
+    justify-content: flex-start;
+}
+
 .consultant-message .message-block {
-    max-width: 90%;
+    display: inline-block;
+    max-width: 75%;
     overflow-wrap: break-word;
     word-wrap: break-word;
     word-break: break-word;
     hyphens: auto;
     padding: 10px;
     border-radius: 10px;
-    word-break: break-word;
     font-size: 14px;
     line-height: 18px;
 }
 
-.consultant-message {
-    padding: 5px;
-    margin: 5px 0;
-}
-
-.consultant-message.user {
+.consultant-message.user .message-block {
     background-color: #d1f7ff;
-    text-align: right;
 }
 
-.consultant-message.assistant {
-    text-align: left;
+.consultant-message.assistant .message-block {
     background-color: #f0f0f0;
-    border-radius: 10px;
-    padding: 10px;
-    margin: 5px 0;
 }
 
 .consultant-message__img img {
