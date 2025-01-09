@@ -56,7 +56,7 @@ export default {
             const messageData = this.createMessageData(this.content, "userInput", "user");
             newMessage(messageData).then((response) => {
                 this.isFormDisabled = false
-                if (response.message.additional.designUrl !== '') {
+                if (response.message.additional.designUrl !== '' && Object.keys(response.message.additional).length !== 0) {
                     this.backgroundImageUrl = response.message.additional.designUrl
                 }
                 this.displayMessage(response, "assistant");
