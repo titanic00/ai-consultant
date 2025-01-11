@@ -33,6 +33,32 @@ export default {
     font-size: 14px;
 }
 
+.consultant__btn-generate {
+    position: relative;
+}
+
+.consultant__btn-generate button {
+    width: 100%;
+    display: block;
+    background: linear-gradient(to right, #F3D0EE, #F3D0EE, #F3D0EE, #F3D0EE, #ffeffa);
+    border: none;
+    padding: 10px;
+    border-radius: 10px;
+}
+
+.consultant__btn-generate::after {
+    content: '';
+    background-image: url('/consultant/sparkling.png');
+    background-position: center;
+    background-repeat: no-repeat;
+    background-size: cover;
+    position: absolute;
+    width: 24px;
+    height: 24px;
+    top: 11px;
+    right: 61%;
+}
+
 /* Startpage.vue */
 /* ------------------------------------------------------------------------------ */
 .startpage__btn-demo button {
