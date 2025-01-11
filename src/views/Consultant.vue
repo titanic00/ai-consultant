@@ -178,10 +178,16 @@ export default {
 }
 
 .select-selected::after {
-    content: '🢓';
+    content: '';
+    background-image: url('/consultant/down-arrow.png');
+    background-position: center;
+    background-repeat: no-repeat;
+    background-size: cover;
     position: absolute;
-    right: 15px;
-    bottom: -2px;
+    width: 14px;
+    height: 14px;
+    right: 10px;
+    bottom: 8px;
     display: block;
 }
 
