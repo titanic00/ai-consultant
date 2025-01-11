@@ -44,6 +44,7 @@ export default {
     border: none;
     padding: 10px;
     border-radius: 10px;
+    color: black;
 }
 
 .consultant__btn-generate::after {

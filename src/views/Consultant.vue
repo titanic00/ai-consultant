@@ -182,6 +182,7 @@ export default {
     position: absolute;
     right: 15px;
     bottom: -2px;
+    display: block;
 }
 
 .select-items {
@@ -208,9 +209,9 @@ export default {
 
 .consultant__settings {
     background-color: #fff;
-    width: 90%;
+    width: 100%;
     height: auto;
-    margin: 0px auto 20px auto;
+    margin: 0px auto;
     border-radius: 10px;
     border: 1px solid #EEABE4;
     gap: 10px;
@@ -236,7 +237,6 @@ export default {
     background-repeat: no-repeat;
     flex-shrink: 0;
     position: relative;
-    margin-bottom: 10px;
 }
 
 .consultant__body {
@@ -261,7 +261,6 @@ export default {
     flex-direction: column;
     flex-grow: 1;
     background-color: white;
-    padding: 15px;
     border-radius: 0px 0px 8px 8px;
     box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
     overflow: hidden;
