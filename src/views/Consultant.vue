@@ -14,12 +14,15 @@ export default {
             content: "",
             backgroundImageUrl: 'https://storage.googleapis.com/dbassistant/createddesigns/20250109151436.jpg',
             viewportHeight: window.innerHeight,
-            extractedObjects: [] as Record<string, string[]>[],
+            extractedObjects: [] as { key: string; values: string[]; selected: string }[],
             selectedValues: [] as string[],
             reworkedPrompt: '',
-            openDropdown: null as number | null
+            openDropdown: null as number | null,
+            fullPrompt: '',
+            processedPrompt: [] as Array<string | { key: string; values: string[]; selected: string }>
         }
     },
+    // test message: Mach mir ein Sneakerdesign, die sollen rot und im Retrostil sein, die Marke ist Balenciaga
     mounted() {
         this.adjustViewportHeight();
         window.addEventListener('resize', this.adjustViewportHeight);
@@ -34,17 +37,12 @@ export default {
     },
     methods: {
         generateUpdatedPrompt() {
-            let updatedPrompt = this.reworkedPrompt;
-
-            this.extractedObjects.forEach((obj, index) => {
-                const key = Object.keys(obj)[0];
-                const values = obj[key];
-                const selectedValue = this.selectedValues[index] || values[0];
-
-                const placeholderRegex = new RegExp(`\\{\\s*'${key}'\\s*:\\s*\\[.*?\\]\\s*\\}`);
-
-                updatedPrompt = updatedPrompt.replace(placeholderRegex, selectedValue);
-            });
+            let updatedPrompt = this.processedPrompt.map(item => {
+                if (typeof item === 'object') {
+                    return item.selected;
+                }
+                return item;
+            }).join('');
 
             return 'Can you create a design based on the following prompt? - ' + updatedPrompt;
         },
@@ -52,22 +50,37 @@ export default {
             this.openDropdown = this.openDropdown === index ? null : index;
         },
         selectOption(index: number, option: string) {
-            this.selectedValues[index] = option;
-            this.openDropdown = null;
+            if (typeof this.processedPrompt[index] === 'object') {
+                (this.processedPrompt[index] as unknown as { selected: string }).selected = option;
+            }
+            setTimeout(() => {
+                this.openDropdown = null;
+            }, 100);
         },
         adjustViewportHeight() {
             this.viewportHeight = window.innerHeight;
         },
         extractObjects(jsonData: MessageData) {
+            this.processedPrompt = []
+            this.fullPrompt = ''
+            this.selectedValues = []
+
             const reworkedPrompt = jsonData.message.additional.reworkedPrompt;
-            const pattern = /\{.*?\}/g;
+            this.reworkedPrompt = reworkedPrompt;
+            const pattern = /(\{.*?\})|([^{}]+)/g;
             const matches = reworkedPrompt.match(pattern);
 
             if (matches) {
-                this.extractedObjects = matches.map((match: string) =>
-                    JSON.parse(match.replace(/'/g, '"'))
-                );
-                this.selectedValues = this.extractedObjects.map(() => '');
+                this.processedPrompt = matches.map((match: string) => {
+                    if (match.startsWith('{') && match.endsWith('}')) {
+                        const obj = JSON.parse(match.replace(/'/g, '"'));
+                        const key = Object.keys(obj)[0];
+                        const values = obj[key];
+                        return { key, values, selected: values[0] };
+                    }
+                    return match;
+                });
+                this.extractedObjects = this.processedPrompt.filter(item => typeof item === 'object') as unknown as { key: string, values: string[], selected: string }[];
             }
         },
         displayMessage(messageData: MessageData, sender: string) {
@@ -124,18 +137,19 @@ export default {
                 <div class="consultant__sneakers-img" :style="{ backgroundImage: `url('${backgroundImageUrl}')` }">
                 </div>
                 <div class="consultant__settings" v-if="extractedObjects.length !== 0">
-                    <div class="consultant__selects">
-                        <div v-for="(item, index) in extractedObjects" :key="index" class="custom-select">
-                            <div class="select-selected" @click="toggleDropdown(index)">
-                                {{ selectedValues[index] || Object.keys(item)[0] }}
-                            </div>
-                            <div class="select-items" v-show="openDropdown === index">
-                                <div v-for="option in Object.values(item)[0]" :key="option"
-                                    @click="selectOption(index, option)">
-                                    {{ option }}
+                    <div class="full-prompt">
+                        <template v-for="(item, index) in processedPrompt" :key="index">
+                            <span v-if="typeof item === 'string'">{{ item }}</span>
+                            <span v-else class="dropdown-placeholder" @click="toggleDropdown(index)">
+                                {{ item.selected }}
+                                <div class="select-items" v-show="openDropdown === index">
+                                    <div v-for="option in item.values" :key="option"
+                                        @click="selectOption(index, option)">
+                                        {{ option }}
+                                    </div>
                                 </div>
-                            </div>
-                        </div>
+                            </span>
+                        </template>
                     </div>
                     <EButton :title="'Generate'" :class="{ 'consultant__btn-generate': true }"
                         @click="sendReworkedPromptAsContent" :is-form-disabled="isFormDisabled" />
@@ -157,27 +171,18 @@ export default {
 </template>
 
 <style scoped>
-.consultant__selects {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 5px;
-}
-
-.custom-select {
+.dropdown-placeholder {
     position: relative;
-}
-
-.select-selected {
+    display: inline-block;
     background-color: #583120;
-    padding: 4px 30px 4px 12px;
-    cursor: pointer;
-    border: 1px solid #ddd;
-    border-radius: 4px;
     color: #F3D0EE;
-    border-radius: 30px;
+    padding: 4px 30px 4px 12px;
+    border-radius: 15px;
+    cursor: pointer;
+    margin-bottom: 1px;
 }
 
-.select-selected::after {
+.dropdown-placeholder::after {
     content: '';
     background-image: url('/consultant/down-arrow.png');
     background-position: center;
@@ -189,6 +194,34 @@ export default {
     right: 10px;
     bottom: 8px;
     display: block;
+}
+
+.dropdown-placeholder .select-items {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    border: 1px solid #ddd;
+    border-radius: 10px 10px 4px 4px;
+    z-index: 100;
+    background-color: #583120;
+}
+
+.dropdown-placeholder .select-items div {
+    padding: 5px 10px;
+    cursor: pointer;
+    color: #F3D0EE;
+}
+
+.dropdown-placeholder .select-items div:hover {}
+
+.consultant__selects {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 5px;
+}
+
+.custom-select {
+    position: relative;
 }
 
 .select-items {
@@ -210,7 +243,7 @@ export default {
 }
 
 .select-items div:hover {
-    background-color: #ddd;
+    background-color: #7a7a7a;
 }
 
 .consultant__settings {
@@ -243,6 +276,7 @@ export default {
     background-repeat: no-repeat;
     flex-shrink: 0;
     position: relative;
+    background-color: #eeeeee;
 }
 
 .consultant__body {
