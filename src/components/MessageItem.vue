@@ -85,7 +85,7 @@ export default {
 
 .consultant-message {
     padding: 5px;
-    margin: 5px 0;
+    margin: 5px 16px;
     display: flex;
 }
 
@@ -104,18 +104,29 @@ export default {
     word-wrap: break-word;
     word-break: break-word;
     hyphens: auto;
-    padding: 10px;
     border-radius: 10px;
     font-size: 14px;
     line-height: 18px;
 }
 
 .consultant-message.user .message-block {
-    background-color: #d1f7ff;
+    background-color: #F3ECE4;
+    padding: 12px;
 }
 
 .consultant-message.assistant .message-block {
-    background-color: #f0f0f0;
+    padding-left: 30px;
+    position: relative;
+}
+
+.consultant-message.assistant .message-block::after {
+    content: '';
+    position: absolute;
+    width: 13px;
+    height: 20px;
+    background-image: url('/consultant/ai-icon.svg');
+    left: 0;
+    top: 0;
 }
 
 .consultant-message__img img {

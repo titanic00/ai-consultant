@@ -24,40 +24,48 @@ export default {
 /* Consultant.vue */
 /* ------------------------------------------------------------------------------ */
 .consultant__btn-send button {
-    padding: 10px 15px;
-    background-color: #007bff;
-    color: white;
-    border: none;
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    background-color: #D4B28A;
+    background-image: url('/consultant/button-arrow-up.svg');
+    background-position: center;
+    background-repeat: no-repeat;
+    background-size: 16px;
     border-radius: 4px;
     cursor: pointer;
     font-size: 14px;
+    position: absolute;
+    border-radius: 50%;
+    border: none;
+    top: 10px;
+    left: 88%;
 }
 
-.consultant__btn-generate {
-    position: relative;
-}
+.consultant__btn-generate {}
 
 .consultant__btn-generate button {
     width: 100%;
-    display: block;
-    background: linear-gradient(to right, #F3D0EE, #F3D0EE, #F3D0EE, #F3D0EE, #ffeffa);
+    display: inline-block;
+    position: relative;
+    background: linear-gradient(90deg, #F70067 0%, #FFA4CA 100%);
     border: none;
     padding: 10px;
     border-radius: 10px;
-    color: black;
+    color: #FFFFFF;
 }
 
-.consultant__btn-generate::after {
+.consultant__btn-generate button::after {
     content: '';
-    background-image: url('/consultant/sparkling.png');
+    background-image: url('/consultant/sparkling.svg');
     background-position: center;
     background-repeat: no-repeat;
     background-size: cover;
     position: absolute;
-    width: 24px;
+    width: 27px;
     height: 24px;
     top: 11px;
-    right: 61%;
+    right: 63%;
 }
 
 /* Startpage.vue */

@@ -24,21 +24,17 @@ export default {
 </template>
 
 <style scoped>
-.consultant__input {
-    flex: 1 1 100%;
-}
-
 .consultant__input input {
     width: 100%;
-    padding: 9.5px;
-    margin-right: 10px;
+    padding: 12px 50px 12px 16px;
     border: 1px solid #ccc;
-    border-radius: 4px;
+    border-radius: 12px;
     font-size: 14px;
 }
 
 .consultant__input input::placeholder {
     font-size: 14px;
+    color: #CACACA;
 }
 
 .startpage__input-email input {

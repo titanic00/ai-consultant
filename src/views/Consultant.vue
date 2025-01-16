@@ -4,6 +4,8 @@ import EButton from '@/components/EButton.vue';
 import EInput from '@/components/EInput.vue';
 import MessageList from '@/components/MessageList.vue';
 import type MessageData from '@/models/MessageData';
+import axios from 'axios';
+import KJUR from 'jsrsasign';
 
 export default {
     components: { MessageList, EButton, EInput },
@@ -19,7 +21,9 @@ export default {
             reworkedPrompt: '',
             openDropdown: null as number | null,
             fullPrompt: '',
-            processedPrompt: [] as Array<string | { key: string; values: string[]; selected: string }>
+            processedPrompt: [] as Array<string | { key: string; values: string[]; selected: string }>,
+            // fileName: '138852011-16492.jpg',
+            // destinationUrl: 'https://storage.googleapis.com/db_sneaker_dev/138852011-16492.jpg',
         }
     },
     // test message: Mach mir ein Sneakerdesign, die sollen rot und im Retrostil sein, die Marke ist Balenciaga
@@ -36,6 +40,57 @@ export default {
         window.removeEventListener('resize', this.adjustViewportHeight);
     },
     methods: {
+        // async getAccessToken() {
+        //     const privateKey = test.private_key;
+        //     const clientEmail = test.client_email;
+
+        //     const header = {
+        //         alg: 'RS256',
+        //         typ: 'JWT'
+        //     };
+
+        //     const now = Math.floor(Date.now() / 1000);
+        //     const claim = {
+        //         // iss: clientEmail,
+        //         scope: 'https://www.googleapis.com/auth/cloud-platform',
+        //         aud: 'https://oauth2.googleapis.com/token',
+        //         exp: now + 3600,
+        //         iat: now
+        //     };
+
+        //     const sHeader = JSON.stringify(header);
+        //     const sPayload = JSON.stringify(claim);
+        //     const sJWT = KJUR.jws.JWS.sign('RS256', sHeader, sPayload, privateKey);
+
+        //     const response = await fetch('https://oauth2.googleapis.com/token', {
+        //         method: 'POST',
+        //         headers: {
+        //             'Content-Type': 'application/x-www-form-urlencoded'
+        //         },
+        //         body: `grant_type=urn:ietf:params:oauth:grant-type:jwt-bearer&assertion=${sJWT}`
+        //     });
+
+        //     const data = await response.json();
+
+        //     return data.access_token
+        // },
+        // async downloadFile() {
+        //     const accessToken = await this.getAccessToken();
+
+        //     const bucketName = '';
+        //     const fileName = '';
+        //     const url = `https://storage.googleapis.com/storage/v1/b/${bucketName}/o/${encodeURIComponent(fileName)}?alt=media`;
+
+        //     const response = await axios({
+        //         method: 'get',
+        //         url: url,
+        //         responseType: 'blob',
+        //         headers: {
+        //             'Authorization': `Bearer ${accessToken}`
+        //         }
+        //     });
+
+        // },
         generateUpdatedPrompt() {
             let updatedPrompt = this.processedPrompt.map(item => {
                 if (typeof item === 'object') {
@@ -65,7 +120,8 @@ export default {
             this.fullPrompt = ''
             this.selectedValues = []
 
-            const reworkedPrompt = jsonData.message.additional.reworkedPrompt;
+            // const reworkedPrompt = jsonData.message.additional.reworkedPrompt;
+            const reworkedPrompt = this.reworkedPrompt;
             this.reworkedPrompt = reworkedPrompt;
             const pattern = /(\{.*?\})|([^{}]+)/g;
             const matches = reworkedPrompt.match(pattern);
@@ -134,25 +190,27 @@ export default {
     <div class="consultant" :style="{ height: `${viewportHeight}px` }">
         <div class="consultant__body">
             <div class="consultant__design">
-                <div class="consultant__sneakers-img" :style="{ backgroundImage: `url('${backgroundImageUrl}')` }">
-                </div>
-                <div class="consultant__settings" v-if="extractedObjects.length !== 0">
-                    <div class="full-prompt">
-                        <template v-for="(item, index) in processedPrompt" :key="index">
-                            <span v-if="typeof item === 'string'">{{ item }}</span>
-                            <span v-else class="dropdown-placeholder" @click="toggleDropdown(index)">
-                                {{ item.selected }}
-                                <div class="select-items" v-show="openDropdown === index">
-                                    <div v-for="option in item.values" :key="option"
-                                        @click="selectOption(index, option)">
-                                        {{ option }}
-                                    </div>
-                                </div>
-                            </span>
-                        </template>
+                <div class="consultant__sneakers">
+                    <div class="consultant__sneakers-img" :style="{ backgroundImage: `url('${backgroundImageUrl}')` }">
                     </div>
-                    <EButton :title="'Generate'" :class="{ 'consultant__btn-generate': true }"
-                        @click="sendReworkedPromptAsContent" :is-form-disabled="isFormDisabled" />
+                    <div class="consultant__settings" v-if="extractedObjects.length !== 0">
+                        <div class="full-prompt">
+                            <template v-for="(item, index) in processedPrompt" :key="index">
+                                <span v-if="typeof item === 'string'">{{ item }}</span>
+                                <span v-else class="dropdown-placeholder" @click="toggleDropdown(index)">
+                                    {{ item.selected }}
+                                    <div class="select-items" v-show="openDropdown === index">
+                                        <div v-for="option in item.values" :key="option"
+                                            @click="selectOption(index, option)">
+                                            {{ option }}
+                                        </div>
+                                    </div>
+                                </span>
+                            </template>
+                        </div>
+                        <EButton :title="'Generate'" :class="{ 'consultant__btn-generate': true }"
+                            @click="sendReworkedPromptAsContent" :is-form-disabled="isFormDisabled" />
+                    </div>
                 </div>
             </div>
             <div class="chat-container">
@@ -161,8 +219,8 @@ export default {
                 </div>
                 <div class="consultant__form">
                     <EInput :class="{ 'consultant__input': true }" :is-form-disabled="isFormDisabled" v-model="content"
-                        :placeholder="'Type a message...'" />
-                    <EButton :class="{ 'consultant__btn-send': true }" :title="'Send'" @click="sendMessage"
+                        :placeholder="'Any other adjustments or questions'" />
+                    <EButton :class="{ 'consultant__btn-send': true }" @click="sendMessage"
                         :is-form-disabled="isFormDisabled || content.length == 0" />
                 </div>
             </div>
@@ -174,45 +232,44 @@ export default {
 .dropdown-placeholder {
     position: relative;
     display: inline-block;
-    background-color: #583120;
-    color: #F3D0EE;
+    background-color: #F3ECE4;
+    color: #333333;
     padding: 4px 30px 4px 12px;
     border-radius: 15px;
     cursor: pointer;
     margin-bottom: 1px;
+    min-width: 80px;
 }
 
 .dropdown-placeholder::after {
     content: '';
-    background-image: url('/consultant/down-arrow.png');
+    background-image: url('/consultant/down-arrow.svg');
     background-position: center;
     background-repeat: no-repeat;
     background-size: cover;
     position: absolute;
-    width: 14px;
-    height: 14px;
-    right: 10px;
-    bottom: 8px;
+    width: 10px;
+    height: 10px;
+    right: 14px;
+    bottom: 11px;
     display: block;
 }
 
 .dropdown-placeholder .select-items {
     position: absolute;
-    top: 100%;
+    top: 110%;
     left: 0;
     border: 1px solid #ddd;
     border-radius: 10px 10px 4px 4px;
     z-index: 100;
-    background-color: #583120;
+    background-color: #F3ECE4;
 }
 
 .dropdown-placeholder .select-items div {
     padding: 5px 10px;
     cursor: pointer;
-    color: #F3D0EE;
+    color: #333333;
 }
-
-.dropdown-placeholder .select-items div:hover {}
 
 .consultant__selects {
     display: flex;
@@ -222,6 +279,32 @@ export default {
 
 .custom-select {
     position: relative;
+}
+
+.consultant__sneakers {
+    background-color: #F3F3F3;
+    padding-bottom: 8px;
+    border-bottom-right-radius: 20px;
+    border-bottom-left-radius: 20px;
+    border-bottom: 1px solid #DADADA;
+    position: relative;
+}
+
+.consultant__sneakers::after {
+    content: '';
+    width: 56px;
+    border: 2px solid #CACACA;
+    position: absolute;
+    bottom: 6px;
+    left: 50%;
+    transform: translateX(-50%);
+    border-radius: 3px;
+}
+
+.full-prompt {
+    display: inline-flex;
+    flex-wrap: wrap;
+    gap: 8px;
 }
 
 .select-items {
@@ -248,13 +331,12 @@ export default {
 
 .consultant__settings {
     background-color: #fff;
-    width: 100%;
     height: auto;
-    margin: 0px auto;
-    border-radius: 10px;
-    border: 1px solid #EEABE4;
+    margin: 0px 16px 8px 16px;
+    border-radius: 20px;
+    border: 1px solid #F3ECE4;
     gap: 10px;
-    padding: 10px;
+    padding: 16px;
     display: flex;
     flex-direction: column;
 }
@@ -264,12 +346,10 @@ export default {
     flex-direction: column;
 }
 
-.consultant__design {
-    /* background-color: #F3ECE4; */
-}
+.consultant__design {}
 
 .consultant__sneakers-img {
-    height: 300px;
+    height: 280px;
     width: 100%;
     background-size: cover;
     background-position: center;
@@ -290,10 +370,9 @@ export default {
 }
 
 .consultant__form {
-    display: flex;
-    gap: 15px;
     flex-shrink: 0;
-    padding: 10px;
+    margin: 0px 16px 48px 16px;
+    position: relative;
 }
 
 .chat-container {
@@ -301,16 +380,14 @@ export default {
     flex-direction: column;
     flex-grow: 1;
     background-color: white;
-    border-radius: 0px 0px 8px 8px;
-    box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
     overflow: hidden;
 }
 
 .chat-box {
     overflow-y: auto;
     flex-grow: 1;
-    border-bottom: 1px solid #ccc;
     margin-bottom: 15px;
     height: auto;
+    padding-top: 48px;
 }
 </style>
