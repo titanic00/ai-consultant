@@ -7,6 +7,8 @@ import type MessageData from '@/models/MessageData';
 import axios from 'axios';
 import KJUR from 'jsrsasign';
 
+type PromptItem = string | { key: string; values: string[]; selected: string };
+
 export default {
     components: { MessageList, EButton, EInput },
     data() {
@@ -16,17 +18,17 @@ export default {
             content: "",
             backgroundImageUrl: 'https://storage.googleapis.com/dbassistant/createddesigns/20250109151436.jpg',
             viewportHeight: window.innerHeight,
-            extractedObjects: [] as { key: string; values: string[]; selected: string }[],
+            extractedObjects: [] as Array<PromptItem>,
             selectedValues: [] as string[],
             reworkedPrompt: '',
             openDropdown: null as number | null,
             fullPrompt: '',
-            processedPrompt: [] as Array<string | { key: string; values: string[]; selected: string }>,
+            processedPrompt: [] as Array<PromptItem>,
             // fileName: '138852011-16492.jpg',
             // destinationUrl: 'https://storage.googleapis.com/db_sneaker_dev/138852011-16492.jpg',
         }
     },
-    // test message: Mach mir ein Sneakerdesign, die sollen rot und im Retrostil sein, die Marke ist Balenciaga
+    // test message: Erstelle mir ein Sneakerdesign, die sollen rot und im Retrostil sein, Marke ist Balenciaga
     mounted() {
         this.adjustViewportHeight();
         window.addEventListener('resize', this.adjustViewportHeight);
@@ -98,7 +100,6 @@ export default {
                 }
                 return item;
             }).join('');
-
             return 'Can you create a design based on the following prompt? - ' + updatedPrompt;
         },
         toggleDropdown(index: number) {
@@ -120,8 +121,7 @@ export default {
             this.fullPrompt = ''
             this.selectedValues = []
 
-            // const reworkedPrompt = jsonData.message.additional.reworkedPrompt;
-            const reworkedPrompt = this.reworkedPrompt;
+            const reworkedPrompt = jsonData.message.additional.reworkedPrompt;
             this.reworkedPrompt = reworkedPrompt;
             const pattern = /(\{.*?\})|([^{}]+)/g;
             const matches = reworkedPrompt.match(pattern);
@@ -169,7 +169,6 @@ export default {
                 }
 
                 if (response.message.additional.reworkedPrompt !== '' && Object.keys(response.message.additional).length !== 0) {
-                    this.reworkedPrompt = response.message.additional.reworkedPrompt;
                     this.extractObjects(response);
                 }
                 this.displayMessage(response, "assistant");
@@ -181,6 +180,25 @@ export default {
             const updatedPrompt = this.generateUpdatedPrompt();
             this.content = updatedPrompt
             this.sendMessage()
+        },
+        getOptions(): string[] {
+            if (this.openDropdown !== null && this.processedPrompt[this.openDropdown] && typeof this.processedPrompt[this.openDropdown] === 'object') {
+                const item = this.processedPrompt[this.openDropdown] as { key: string; values: string[]; selected: string };
+                return item.values;
+            }
+            return [];
+        }
+    },
+    computed: {
+        dropdownStyles() {
+            if (this.openDropdown === null) return {};
+            const rect = (this.$refs.fullPrompt as HTMLElement)?.children[this.openDropdown]?.getBoundingClientRect();
+            if (!rect) return {};
+            return {
+                top: `${rect.bottom + window.scrollY}px`,
+                left: `${rect.left + window.scrollX}px`,
+                width: `${rect.width}px`
+            };
         }
     }
 };
@@ -191,20 +209,15 @@ export default {
         <div class="consultant__body">
             <div class="consultant__design">
                 <div class="consultant__sneakers">
-                    <div class="consultant__sneakers-img" :style="{ backgroundImage: `url('${backgroundImageUrl}')` }">
+                    <div class="consultant__sneakers-img" :style="{ backgroundImage: `url(${backgroundImageUrl})` }">
                     </div>
                     <div class="consultant__settings" v-if="extractedObjects.length !== 0">
-                        <div class="full-prompt">
+                        <div :class="openDropdown === null ? 'full-prompt' : 'full-prompt full-prompt--scroll-disabled'"
+                            ref="fullPrompt">
                             <template v-for="(item, index) in processedPrompt" :key="index">
                                 <span v-if="typeof item === 'string'">{{ item }}</span>
                                 <span v-else class="dropdown-placeholder" @click="toggleDropdown(index)">
                                     {{ item.selected }}
-                                    <div class="select-items" v-show="openDropdown === index">
-                                        <div v-for="option in item.values" :key="option"
-                                            @click="selectOption(index, option)">
-                                            {{ option }}
-                                        </div>
-                                    </div>
                                 </span>
                             </template>
                         </div>
@@ -222,6 +235,13 @@ export default {
                         :placeholder="'Any other adjustments or questions'" />
                     <EButton :class="{ 'consultant__btn-send': true }" @click="sendMessage"
                         :is-form-disabled="isFormDisabled || content.length == 0" />
+                </div>
+            </div>
+        </div>
+        <div class="select-items-wrapper" v-show="openDropdown !== null">
+            <div class="select-items" :style="dropdownStyles">
+                <div v-for="option in getOptions()" :key="option" @click="selectOption(openDropdown!, option)">
+                    {{ option }}
                 </div>
             </div>
         </div>
@@ -255,17 +275,23 @@ export default {
     display: block;
 }
 
-.dropdown-placeholder .select-items {
-    position: absolute;
-    top: 110%;
-    left: 0;
-    border: 1px solid #ddd;
-    border-radius: 10px 10px 4px 4px;
-    z-index: 100;
-    background-color: #F3ECE4;
+.select-items-wrapper {
+    position: fixed;
+    z-index: 1000;
 }
 
-.dropdown-placeholder .select-items div {
+.select-items {
+    position: absolute;
+    background-color: #F3ECE4 !important;
+    border: 1px solid #ddd !important;
+    border-radius: 10px 10px 4px 4px !important;
+    z-index: 1000 !important;
+    max-height: 150px !important;
+    min-width: max-content !important;
+    overflow-y: auto;
+}
+
+.select-items div {
     padding: 5px 10px;
     cursor: pointer;
     color: #333333;
@@ -305,15 +331,18 @@ export default {
     display: inline-flex;
     flex-wrap: wrap;
     gap: 8px;
+    max-height: 100px;
+    overflow-y: auto;
+    position: relative;
+}
+
+.full-prompt--scroll-disabled {
+    overflow-y: hidden;
 }
 
 .select-items {
     position: absolute;
     background-color: #f9f9f9;
-    top: 100%;
-    left: 0;
-    right: 0;
-    z-index: 99;
     border: 1px solid #ddd;
     border-radius: 0 0 4px 4px;
     max-height: 200px;
@@ -346,10 +375,8 @@ export default {
     flex-direction: column;
 }
 
-.consultant__design {}
-
 .consultant__sneakers-img {
-    height: 280px;
+    height: 220px;
     width: 100%;
     background-size: cover;
     background-position: center;
@@ -371,7 +398,7 @@ export default {
 
 .consultant__form {
     flex-shrink: 0;
-    margin: 0px 16px 48px 16px;
+    margin: 0px 16px 16px 16px;
     position: relative;
 }
 
@@ -388,6 +415,5 @@ export default {
     flex-grow: 1;
     margin-bottom: 15px;
     height: auto;
-    padding-top: 48px;
 }
 </style>
