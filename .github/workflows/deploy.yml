@@ -22,6 +22,9 @@ jobs:
         with:
           project_id: ${{ secrets.GCP_PROJECT_ID }}
           service_account_key: ${{ secrets.GCP_SA_KEY }}
+          VITE_PRIVATE_KEY: ${{ secrets.VITE_PRIVATE_KEY }}
+          VITE_CLIENT_EMAIL: ${{ secrets.VITE_CLIENT_EMAIL }}
+          VITE_BUCKET_NAME: ${{ secrets.VITE_BUCKET_NAME }}
           export_default_credentials: true
 
       - name: Configure Docker

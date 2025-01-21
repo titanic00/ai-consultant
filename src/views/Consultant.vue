@@ -1,11 +1,10 @@
 <script lang="ts">
-import { newMessage, newThread } from '@/api/MessageClient';
+import { downloadImg, newMessage, newThread } from '@/api/MessageClient';
 import EButton from '@/components/EButton.vue';
 import EInput from '@/components/EInput.vue';
 import MessageList from '@/components/MessageList.vue';
 import type MessageData from '@/models/MessageData';
-import axios from 'axios';
-import KJUR from 'jsrsasign';
+import { KJUR } from 'jsrsasign';
 
 type PromptItem = string | { key: string; values: string[]; selected: string };
 
@@ -24,14 +23,16 @@ export default {
             openDropdown: null as number | null,
             fullPrompt: '',
             processedPrompt: [] as Array<PromptItem>,
+            accessToken: ''
             // fileName: '138852011-16492.jpg',
-            // destinationUrl: 'https://storage.googleapis.com/db_sneaker_dev/138852011-16492.jpg',
         }
     },
     // test message: Erstelle mir ein Sneakerdesign, die sollen rot und im Retrostil sein, Marke ist Balenciaga
     mounted() {
         this.adjustViewportHeight();
         window.addEventListener('resize', this.adjustViewportHeight);
+
+        this.getAccessToken()
 
         newThread().then((response) => {
             sessionStorage.setItem("thread_id", response.threadId);
@@ -42,57 +43,45 @@ export default {
         window.removeEventListener('resize', this.adjustViewportHeight);
     },
     methods: {
-        // async getAccessToken() {
-        //     const privateKey = test.private_key;
-        //     const clientEmail = test.client_email;
+        async getAccessToken() {
+            const privateKey = import.meta.env.VITE_PRIVATE_KEY;
+            const clientEmail = import.meta.env.VITE_CLIENT_EMAIL;
 
-        //     const header = {
-        //         alg: 'RS256',
-        //         typ: 'JWT'
-        //     };
+            const header = {
+                alg: 'RS256',
+                typ: 'JWT'
+            };
 
-        //     const now = Math.floor(Date.now() / 1000);
-        //     const claim = {
-        //         // iss: clientEmail,
-        //         scope: 'https://www.googleapis.com/auth/cloud-platform',
-        //         aud: 'https://oauth2.googleapis.com/token',
-        //         exp: now + 3600,
-        //         iat: now
-        //     };
+            const now = Math.floor(Date.now() / 1000);
+            const claim = {
+                iss: clientEmail,
+                scope: 'https://www.googleapis.com/auth/cloud-platform',
+                aud: 'https://oauth2.googleapis.com/token',
+                exp: now + 3600,
+                iat: now
+            };
 
-        //     const sHeader = JSON.stringify(header);
-        //     const sPayload = JSON.stringify(claim);
-        //     const sJWT = KJUR.jws.JWS.sign('RS256', sHeader, sPayload, privateKey);
+            const sHeader = JSON.stringify(header);
+            const sPayload = JSON.stringify(claim);
+            const sJWT = KJUR.jws.JWS.sign('RS256', sHeader, sPayload, privateKey);
 
-        //     const response = await fetch('https://oauth2.googleapis.com/token', {
-        //         method: 'POST',
-        //         headers: {
-        //             'Content-Type': 'application/x-www-form-urlencoded'
-        //         },
-        //         body: `grant_type=urn:ietf:params:oauth:grant-type:jwt-bearer&assertion=${sJWT}`
-        //     });
+            const response = await fetch('https://oauth2.googleapis.com/token', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded'
+                },
+                body: `grant_type=urn:ietf:params:oauth:grant-type:jwt-bearer&assertion=${sJWT}`
+            })
 
-        //     const data = await response.json();
+            this.accessToken = await response.json();
+        },
+        async downloadFile(fileName: string) {
+            const bucketName = import.meta.env.VITE_BUCKET_NAME;
 
-        //     return data.access_token
-        // },
-        // async downloadFile() {
-        //     const accessToken = await this.getAccessToken();
-
-        //     const bucketName = '';
-        //     const fileName = '';
-        //     const url = `https://storage.googleapis.com/storage/v1/b/${bucketName}/o/${encodeURIComponent(fileName)}?alt=media`;
-
-        //     const response = await axios({
-        //         method: 'get',
-        //         url: url,
-        //         responseType: 'blob',
-        //         headers: {
-        //             'Authorization': `Bearer ${accessToken}`
-        //         }
-        //     });
-
-        // },
+            downloadImg(this.accessToken, bucketName, fileName).then((response) => {
+                return URL.createObjectURL(response);
+            })
+        },
         generateUpdatedPrompt() {
             let updatedPrompt = this.processedPrompt.map(item => {
                 if (typeof item === 'object') {
@@ -100,6 +89,7 @@ export default {
                 }
                 return item;
             }).join('');
+
             return 'Can you create a design based on the following prompt? - ' + updatedPrompt;
         },
         toggleDropdown(index: number) {
@@ -224,6 +214,17 @@ export default {
                         <EButton :title="'Generate'" :class="{ 'consultant__btn-generate': true }"
                             @click="sendReworkedPromptAsContent" :is-form-disabled="isFormDisabled" />
                     </div>
+                    <!-- <div class="consultant__match match-consultant">
+                        <div class="match-consultant__list">
+                            <div class="match-consultant__item">
+                                <div class="match-consultant__img"></div>
+                                <EButton :title="'Show details'" :class="{ 'consultant__btn-match': true }" />
+                            </div>
+                        </div>
+                        <div class="match-consultant__selected">
+
+                        </div>
+                    </div> -->
                 </div>
             </div>
             <div class="chat-container">
@@ -249,6 +250,34 @@ export default {
 </template>
 
 <style scoped>
+.consultant__match {
+    max-height: 500px;
+    overflow-y: scroll;
+}
+
+.match-consultant__img {
+    background-image: url('https://storage.googleapis.com/dbassistant/createddesigns/20250109151436.jpg');
+    width: 170px;
+    height: 127px;
+    background-position: center;
+    background-repeat: no-repeat;
+    background-size: cover;
+    border-top: 1px solid #F70067;
+    border-left: 1px solid #F70067;
+    border-right: 1px solid #F70067;
+    border-top-left-radius: 20px;
+    border-top-right-radius: 20px;
+}
+
+.match-consultant__list {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: center;
+    gap: 18px;
+    padding: 17px;
+}
+
 .dropdown-placeholder {
     position: relative;
     display: inline-block;

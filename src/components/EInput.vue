@@ -45,6 +45,7 @@ export default {
     text-align: center;
     border: 1px solid #C7B6B6;
     font-size: 18px;
+    padding: 12px;
 }
 
 .startpage__input-email input::placeholder {

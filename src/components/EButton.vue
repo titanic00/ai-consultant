@@ -68,6 +68,31 @@ export default {
     right: 63%;
 }
 
+.consultant__btn-match button {
+    border: none;
+    width: 100%;
+    background: #F70067;
+    border-bottom-left-radius: 20px;
+    border-bottom-right-radius: 20px;
+    padding: 12.5px 0px;
+    color: #FFFFFF;
+    position: relative;
+    text-align: center;
+}
+
+.consultant__btn-match button::after {
+    content: '';
+    background-image: url('/consultant/right-arrow.svg');
+    background-position: center;
+    background-repeat: no-repeat;
+    background-size: cover;
+    position: absolute;
+    width: 7px;
+    height: 13px;
+    bottom: 17px;
+    right: 16%;
+}
+
 /* Startpage.vue */
 /* ------------------------------------------------------------------------------ */
 .startpage__btn-demo button {
