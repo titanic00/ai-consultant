@@ -34,10 +34,6 @@ export default {
         this.adjustViewportHeight();
         window.addEventListener('resize', this.adjustViewportHeight);
 
-        console.log(import.meta.env.VITE_BUCKET_NAME);
-        console.log(import.meta.env.VITE_PRIVATE_KEY);
-        console.log(import.meta.env.VITE_CLIENT_EMAIL);
-
         this.getAccessToken()
 
         newThread().then((response) => {
@@ -80,6 +76,8 @@ export default {
             })
 
             const data = await response.json();
+
+            console.log(data);
 
             this.accessToken = data.access_token
         },
