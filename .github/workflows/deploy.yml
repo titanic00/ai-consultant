@@ -32,7 +32,7 @@ jobs:
 
       - name: Build and Push Docker image
         run: |
-          docker build -f ../Dockerfile --build-arg VITE_PRIVATE_KEY='${{ secrets.VITE_PRIVATE_KEY }}' --build-arg VITE_CLIENT_EMAIL='${{ secrets.VITE_CLIENT_EMAIL }}' --build-arg VITE_BUCKET_NAME='${{ secrets.VITE_BUCKET_NAME }}' -t gcr.io/$PROJECT_ID/$SERVICE_NAME:${{ github.sha }} .
+          docker build --build-arg VITE_PRIVATE_KEY='${{ secrets.VITE_PRIVATE_KEY }}' --build-arg VITE_CLIENT_EMAIL='${{ secrets.VITE_CLIENT_EMAIL }}' --build-arg VITE_BUCKET_NAME='${{ secrets.VITE_BUCKET_NAME }}' -t gcr.io/$PROJECT_ID/$SERVICE_NAME:${{ github.sha }} .
           docker push gcr.io/$PROJECT_ID/$SERVICE_NAME:${{ github.sha }}
 
       - name: Deploy to Cloud Run
