@@ -77,8 +77,6 @@ export default {
 
             const data = await response.json();
 
-            console.log(data);
-
             this.accessToken = data.access_token
         },
         async downloadFile() {
