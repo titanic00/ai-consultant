@@ -46,7 +46,7 @@ export default {
     },
     methods: {
         async getAccessToken() {
-            const privateKey = import.meta.env.VITE_PRIVATE_KEY;
+            const privateKey = import.meta.env.VITE_PRIVATE_KEY.replace(/\\n/g, '\n');
             const clientEmail = import.meta.env.VITE_CLIENT_EMAIL;
 
             const header = {
