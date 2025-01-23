@@ -42,8 +42,6 @@ export default {
     left: 88%;
 }
 
-.consultant__btn-generate {}
-
 .consultant__btn-generate button {
     width: 100%;
     display: inline-block;
@@ -91,6 +89,30 @@ export default {
     height: 13px;
     bottom: 17px;
     right: 16%;
+}
+
+.selected-match__btn button {
+    border: none;
+    background-color: #F70067;
+    width: 100%;
+    padding: 11px;
+    border-radius: 10px;
+    color: #fff;
+    position: relative;
+}
+
+.selected-match__btn button::after {
+    content: '';
+    position: absolute;
+    width: 25px;
+    height: 25px;
+    background-image: url('/consultant/shop.svg');
+    background-position: center;
+    background-repeat: no-repeat;
+    background-size: cover;
+    top: 50%;
+    transform: translateY(-50%);
+    left: 30%;
 }
 
 /* Startpage.vue */

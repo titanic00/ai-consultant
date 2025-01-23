@@ -15,10 +15,6 @@ export default {
         <!-- <div :class="`${messageStyle}__img`" v-if="messageData.message.type === 'create'">
             <img :src="messageData.message.additional.designUrl" alt="Generated Product Design" />
         </div> -->
-        <div :class="`${messageStyle}__img`" v-for="match in messageData.message.additional" :key="match.id"
-            :match="match" v-if="messageData.message.type === 'match'">
-            <img class="message-additional__img" :src="match[4].image_url" alt="Matched Design Product Image">
-        </div>
     </div>
 </template>
 

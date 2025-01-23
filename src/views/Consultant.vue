@@ -13,6 +13,7 @@ export default {
     data() {
         return {
             messages: [] as MessageData[],
+            messageResponse: {} as MessageData,
             isFormDisabled: false,
             content: "",
             backgroundImageUrl: 'https://storage.googleapis.com/dbassistant/createddesigns/20250109151436.jpg',
@@ -23,14 +24,17 @@ export default {
             openDropdown: null as number | null,
             fullPrompt: '',
             processedPrompt: [] as Array<PromptItem>,
-            accessToken: ''
-            // fileName: '138852011-16492.jpg',
+            accessToken: '',
+            imageList: [] as string[],
+            sneakerToShow: null as number | null
         }
     },
     // test message: Erstelle mir ein Sneakerdesign, die sollen rot und im Retrostil sein, Marke ist Balenciaga
     mounted() {
         this.adjustViewportHeight();
         window.addEventListener('resize', this.adjustViewportHeight);
+
+        console.log(import.meta.env.VITE_BUCKET_NAME);
 
         this.getAccessToken()
 
@@ -73,14 +77,41 @@ export default {
                 body: `grant_type=urn:ietf:params:oauth:grant-type:jwt-bearer&assertion=${sJWT}`
             })
 
-            this.accessToken = await response.json();
-        },
-        async downloadFile(fileName: string) {
-            const bucketName = import.meta.env.VITE_BUCKET_NAME;
+            const data = await response.json();
 
-            downloadImg(this.accessToken, bucketName, fileName).then((response) => {
-                return URL.createObjectURL(response);
-            })
+            this.accessToken = data.access_token
+        },
+        async downloadFile() {
+            const bucketName = import.meta.env.VITE_BUCKET_NAME;
+            const promises: Promise<string>[] = [];
+
+            Object.keys(this.messageResponse.message.additional).forEach(key => {
+                const group = this.messageResponse.message.additional[key];
+                group.forEach((item: { image_uri?: string }) => {
+                    if (item && item.image_uri) {
+                        const fileName = item.image_uri;
+                        const reworkedFileName = fileName.substring(fileName.lastIndexOf('/') + 1);
+
+                        promises.push(
+                            downloadImg(this.accessToken, bucketName, reworkedFileName)
+                                .then(response => {
+                                    if (response === null) {
+                                        return 'https://storage.googleapis.com/dbassistant/createddesigns/20250109151436.jpg';
+                                    }
+                                    return URL.createObjectURL(response);
+                                })
+                        );
+                    }
+                });
+            });
+
+            try {
+                const results = await Promise.all(promises);
+                this.imageList = results.filter(result => result !== null);
+                this.backgroundImageUrl = this.imageList[0];
+            } catch (error) {
+                console.error('Error downloading files:', error);
+            }
         },
         generateUpdatedPrompt() {
             let updatedPrompt = this.processedPrompt.map(item => {
@@ -152,17 +183,25 @@ export default {
             this.isFormDisabled = true;
             const messageData = this.createMessageData(this.content, "userInput", "user");
             this.content = "";
+            this.sneakerToShow = null
             newMessage(messageData).then((response) => {
                 this.isFormDisabled = false;
+                this.messageResponse = response
                 if (response.message.additional.designUrl !== '' && Object.keys(response.message.additional).length !== 0) {
                     this.backgroundImageUrl = response.message.additional.designUrl;
                 }
 
-                if (response.message.additional.reworkedPrompt !== '' && Object.keys(response.message.additional).length !== 0) {
+                if (response.message.type === 'create') {
                     this.extractObjects(response);
                 }
+
+                if (response.message.type === 'match') {
+                    this.downloadFile();
+                }
+
                 this.displayMessage(response, "assistant");
             }).catch(error => {
+                console.log(error);
                 this.isFormDisabled = false;
             })
         },
@@ -177,6 +216,13 @@ export default {
                 return item.values;
             }
             return [];
+        },
+        showSneaker(index: number) {
+            this.sneakerToShow = index
+            this.backgroundImageUrl = this.imageList[this.sneakerToShow];
+        },
+        showAllSneakers() {
+            this.sneakerToShow = null
         }
     },
     computed: {
@@ -189,6 +235,12 @@ export default {
                 left: `${rect.left + window.scrollX}px`,
                 width: `${rect.width}px`
             };
+        },
+        isMessageTypeCreate() {
+            return this.messageResponse?.message?.type === 'create'
+        },
+        isMessageTypeMatch() {
+            return this.messageResponse?.message?.type === 'match'
         }
     }
 };
@@ -201,7 +253,8 @@ export default {
                 <div class="consultant__sneakers">
                     <div class="consultant__sneakers-img" :style="{ backgroundImage: `url(${backgroundImageUrl})` }">
                     </div>
-                    <div class="consultant__settings" v-if="extractedObjects.length !== 0">
+                    <div v-if="isMessageTypeCreate"
+                        :class="isFormDisabled ? 'consultant__settings disabled' : 'consultant__settings'">
                         <div :class="openDropdown === null ? 'full-prompt' : 'full-prompt full-prompt--scroll-disabled'"
                             ref="fullPrompt">
                             <template v-for="(item, index) in processedPrompt" :key="index">
@@ -214,17 +267,39 @@ export default {
                         <EButton :title="'Generate'" :class="{ 'consultant__btn-generate': true }"
                             @click="sendReworkedPromptAsContent" :is-form-disabled="isFormDisabled" />
                     </div>
-                    <!-- <div class="consultant__match match-consultant">
-                        <div class="match-consultant__list">
-                            <div class="match-consultant__item">
-                                <div class="match-consultant__img"></div>
-                                <EButton :title="'Show details'" :class="{ 'consultant__btn-match': true }" />
+                    <div :class="isFormDisabled ? 'consultant__match match-consultant disabled' : 'consultant__match match-consultant'"
+                        v-if="isMessageTypeMatch">
+                        <div class="match-consultant__list" v-if="sneakerToShow === null">
+                            <div class="match-consultant__item" v-for="(image, index) in imageList" :key="index">
+                                <div class="match-consultant__img" :style="{ backgroundImage: `url(${image})` }"></div>
+                                <EButton :title="'Show details'" :class="{ 'consultant__btn-match': true }"
+                                    @click="showSneaker(index)" />
                             </div>
                         </div>
-                        <div class="match-consultant__selected">
-
+                        <div class="match-consultant__selected selected-match" v-if="sneakerToShow !== null">
+                            <div class="selected-match__img-wrapper">
+                                <div class="selected-match__img"
+                                    :style="{ backgroundImage: `url(${imageList[sneakerToShow]})` }"></div>
+                                <div class="selected-match__favorite"></div>
+                                <div class="selected-match__arrow" @click="showAllSneakers"></div>
+                            </div>
+                            <div class="selected-match__info">
+                                <div class="selected-match__brand">{{
+                                    messageResponse.message.additional['match' + (sneakerToShow + 1)][5].brand }}</div>
+                                <div class="selected-match__name">{{
+                                    messageResponse.message.additional['match' + (sneakerToShow + 1)][2].display_name }}
+                                </div>
+                                <div class="selected-match__price">{{
+                                    messageResponse.message.additional['match' + (sneakerToShow +
+                                        1)][4].price.replace(/^[^\d]+/, '') }} €
+                                </div>
+                            </div>
+                            <div class="selected-match__shop">{{ messageResponse.message.additional['match' +
+                                (sneakerToShow + 1)][6].shop
+                                }}</div>
+                            <EButton :title="'Shop Now'" :class="{ 'selected-match__btn': true }" />
                         </div>
-                    </div> -->
+                    </div>
                 </div>
             </div>
             <div class="chat-container">
@@ -250,13 +325,67 @@ export default {
 </template>
 
 <style scoped>
+.selected-match__img-wrapper {
+    position: relative;
+}
+
+.selected-match__info {
+    margin-bottom: 10px;
+}
+
+.selected-match__shop {
+    margin-bottom: 10px;
+    font-size: 14px;
+}
+
+.selected-match__brand {
+    font-weight: 700;
+}
+
+.selected-match__img {
+    width: 100%;
+    height: 214px;
+    background-position: center;
+    background-repeat: no-repeat;
+    background-size: cover;
+    border: 1px solid #F70067;
+    border-radius: 20px;
+    margin-bottom: 16px;
+}
+
+.selected-match__favorite {
+    content: '';
+    width: 30px;
+    height: 30px;
+    background-image: url('/consultant/favorite.svg');
+    position: absolute;
+    top: 16px;
+    right: 16px;
+    background-position: center;
+    background-repeat: no-repeat;
+    background-size: cover;
+}
+
+.selected-match__arrow {
+    content: '';
+    width: 30px;
+    height: 30px;
+    background-image: url('/consultant/left-arrow.svg');
+    position: absolute;
+    top: 16px;
+    left: 16px;
+    background-position: center;
+    background-repeat: no-repeat;
+    background-size: cover;
+}
+
 .consultant__match {
     max-height: 500px;
     overflow-y: scroll;
+    padding: 17px;
 }
 
 .match-consultant__img {
-    background-image: url('https://storage.googleapis.com/dbassistant/createddesigns/20250109151436.jpg');
     width: 170px;
     height: 127px;
     background-position: center;
@@ -275,7 +404,6 @@ export default {
     align-items: center;
     justify-content: center;
     gap: 18px;
-    padding: 17px;
 }
 
 .dropdown-placeholder {
@@ -338,7 +466,6 @@ export default {
 
 .consultant__sneakers {
     background-color: #F3F3F3;
-    padding-bottom: 8px;
     border-bottom-right-radius: 20px;
     border-bottom-left-radius: 20px;
     border-bottom: 1px solid #DADADA;
@@ -390,7 +517,7 @@ export default {
 .consultant__settings {
     background-color: #fff;
     height: auto;
-    margin: 0px 16px 8px 16px;
+    margin: 8px 16px 8px 16px;
     border-radius: 20px;
     border: 1px solid #F3ECE4;
     gap: 10px;

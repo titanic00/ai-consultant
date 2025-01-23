@@ -7,7 +7,3 @@ export const apiBasis = axios.create({
 export const apiBasisStorage = axios.create({
     baseURL: import.meta.env.VITE_STORAGE_API_URL
 })
-
-export const apiBasisAuth = axios.create({
-    baseURL: import.meta.env.VITE_GOOGLE_AUTH_URL
-})
