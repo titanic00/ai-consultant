@@ -78,6 +78,17 @@ export default {
     text-align: center;
 }
 
+@media (max-width: 391px) {
+    .consultant__btn-match button {
+        padding: 6px 0px;
+        font-size: 14px;
+    }
+
+    .consultant__btn-match button::after {
+        display: none;
+    }
+}
+
 .consultant__btn-match button::after {
     content: '';
     background-image: url('/consultant/right-arrow.svg');

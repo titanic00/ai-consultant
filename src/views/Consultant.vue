@@ -161,7 +161,7 @@ export default {
             try {
                 const results = await Promise.all(promises);
                 this.imageList = results.filter(result => result !== null);
-                this.backgroundImageUrl = this.imageList[0];
+                // this.backgroundImageUrl = this.imageList[0];
             } catch (error) {
                 console.error('Error downloading files:', error);
             }
@@ -273,7 +273,7 @@ export default {
         },
         showSneaker(index: number) {
             this.sneakerToShow = index
-            this.backgroundImageUrl = this.imageList[this.sneakerToShow];
+            // this.backgroundImageUrl = this.imageList[this.sneakerToShow];
             this.swipedIndex = 0;
         },
         showAllSneakers() {
@@ -508,6 +508,20 @@ export default {
     border-right: 1px solid #F70067;
     border-top-left-radius: 20px;
     border-top-right-radius: 20px;
+}
+
+@media (max-width: 391px) {
+    .match-consultant__img {
+        width: 150px;
+        height: 120px;
+    }
+}
+
+@media (max-width: 351px) {
+    .match-consultant__img {
+        width: 130px;
+        height: 100px;
+    }
 }
 
 .match-consultant__list {
