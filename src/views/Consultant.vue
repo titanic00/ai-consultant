@@ -240,11 +240,9 @@ export default {
             newMessage(messageData).then((response) => {
                 this.isFormDisabled = false;
                 this.messageResponse = response
-                if (response.message.additional.designUrl !== '' && Object.keys(response.message.additional).length !== 0) {
-                    this.backgroundImageUrl = response.message.additional.designUrl;
-                }
-
                 if (response.message.type === 'create') {
+                    console.log(this.backgroundImageUrl);
+                    this.backgroundImageUrl = response.message.additional.designUrl;
                     this.extractObjects(response);
                 }
 
