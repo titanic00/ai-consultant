@@ -5,7 +5,6 @@ import EInput from '@/components/EInput.vue';
 import MessageList from '@/components/MessageList.vue';
 import type MessageData from '@/models/MessageData';
 import { KJUR } from 'jsrsasign';
-import matches from '../../test-files/matches.json';
 
 type PromptItem = string | { key: string; values: string[]; selected: string };
 
@@ -28,7 +27,6 @@ export default {
             accessToken: '',
             imageList: [] as string[],
             sneakerToShow: null as number | null,
-            messageDataTest: matches,
             parsedMatchedObjects: [],
             swipedIndex: 0,
             startX: 0,
@@ -131,7 +129,7 @@ export default {
             this.accessToken = data.access_token
         },
         parseMatchedObjects() {
-            Object.keys(this.messageDataTest.message.additional).forEach(key => {
+            Object.keys(this.messageResponse.message.additional).forEach(key => {
                 const group = this.messageResponse.message.additional[key];
                 (this.parsedMatchedObjects as any[]).push(group);
             });
@@ -140,7 +138,7 @@ export default {
             const bucketName = import.meta.env.VITE_BUCKET_NAME;
             const promises: Promise<string>[] = [];
 
-            Object.keys(this.messageDataTest.message.additional).forEach(key => {
+            Object.keys(this.messageResponse.message.additional).forEach(key => {
                 const group = this.messageResponse.message.additional[key];
                 group.forEach((item: { image_uri?: string }) => {
                     if (item && item.image_uri) {
