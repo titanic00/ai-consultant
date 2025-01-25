@@ -5,6 +5,7 @@ import EInput from '@/components/EInput.vue';
 import MessageList from '@/components/MessageList.vue';
 import type MessageData from '@/models/MessageData';
 import { KJUR } from 'jsrsasign';
+import matches from '../../test-files/matches.json';
 
 type PromptItem = string | { key: string; values: string[]; selected: string };
 
@@ -26,7 +27,13 @@ export default {
             processedPrompt: [] as Array<PromptItem>,
             accessToken: '',
             imageList: [] as string[],
-            sneakerToShow: null as number | null
+            sneakerToShow: null as number | null,
+            messageDataTest: matches,
+            parsedMatchedObjects: [],
+            swipedIndex: 0,
+            startX: 0,
+            currentX: 0,
+            swipeDirection: ''
         }
     },
     // test message: Erstelle mir ein Sneakerdesign, die sollen rot und im Retrostil sein, Marke ist Balenciaga
@@ -45,6 +52,50 @@ export default {
         window.removeEventListener('resize', this.adjustViewportHeight);
     },
     methods: {
+        onTouchStart(event: TouchEvent, index: number) {
+            this.startX = event.touches[0].clientX;
+            this.currentX = this.startX;
+            this.swipedIndex = index;
+            this.swipeDirection = '';
+        },
+        onTouchMove(event: TouchEvent) {
+            this.currentX = event.touches[0].clientX;
+            const deltaX = this.currentX - this.startX;
+            const swipeContent = document.getElementById(this.swipedIndex.toString());
+            if (swipeContent) {
+                swipeContent.style.transform = `translateX(${deltaX}px)`;
+            }
+        },
+        onTouchEnd(event: Event, index: number) {
+            const deltaX = this.currentX - this.startX;
+            const swipeContent = document.getElementById(index.toString());
+
+            if (swipeContent) {
+                const isOdd = index % 2 === 0;
+
+                if (deltaX < -50 && isOdd) {
+                    this.swipeDirection = "left";
+                    swipeContent.style.transition = "transform 0.3s ease-out";
+                    swipeContent.style.transform = "translateX(-100%)";
+                    setTimeout(() => {
+                        this.onSwipeLeft(index);
+                        this.resetSwipe(swipeContent);
+                    }, 300);
+                } else if (deltaX > 50 && !isOdd) {
+                    this.swipeDirection = "right";
+                    swipeContent.style.transition = "transform 0.3s ease-out";
+                    swipeContent.style.transform = "translateX(100%)";
+                    setTimeout(() => {
+                        this.onSwipeRight(index);
+                        this.resetSwipe(swipeContent);
+                    }, 300);
+                } else {
+                    // Invalid swipe, reset position
+                    swipeContent.style.transition = "transform 0.3s ease-out";
+                    swipeContent.style.transform = "translateX(0)";
+                }
+            }
+        },
         async getAccessToken() {
             const privateKey = import.meta.env.VITE_PRIVATE_KEY.replace(/\\n/g, '\n');
             const clientEmail = import.meta.env.VITE_CLIENT_EMAIL;
@@ -79,11 +130,17 @@ export default {
 
             this.accessToken = data.access_token
         },
+        parseMatchedObjects() {
+            Object.keys(this.messageDataTest.message.additional).forEach(key => {
+                const group = this.messageResponse.message.additional[key];
+                (this.parsedMatchedObjects as any[]).push(group);
+            });
+        },
         async downloadFile() {
             const bucketName = import.meta.env.VITE_BUCKET_NAME;
             const promises: Promise<string>[] = [];
 
-            Object.keys(this.messageResponse.message.additional).forEach(key => {
+            Object.keys(this.messageDataTest.message.additional).forEach(key => {
                 const group = this.messageResponse.message.additional[key];
                 group.forEach((item: { image_uri?: string }) => {
                     if (item && item.image_uri) {
@@ -195,6 +252,7 @@ export default {
 
                 if (response.message.type === 'match') {
                     this.downloadFile();
+                    this.parseMatchedObjects();
                 }
 
                 this.displayMessage(response, "assistant");
@@ -218,9 +276,44 @@ export default {
         showSneaker(index: number) {
             this.sneakerToShow = index
             this.backgroundImageUrl = this.imageList[this.sneakerToShow];
+            this.swipedIndex = 0;
         },
         showAllSneakers() {
             this.sneakerToShow = null
+            this.swipedIndex = 0;
+        },
+        onSwipeLeft(index: number) {
+            const randomIndex =
+                Math.floor(Math.random() * (this.parsedMatchedObjects.length - 4)) + 4;
+
+            const buff = this.parsedMatchedObjects[index];
+            this.parsedMatchedObjects[index] = this.parsedMatchedObjects[randomIndex];
+            this.parsedMatchedObjects[randomIndex] = buff;
+
+            const buffImg = this.imageList[index];
+            this.imageList[index] = this.imageList[randomIndex];
+            this.imageList[randomIndex] = buffImg;
+
+            this.swipedIndex = 0;
+        },
+        onSwipeRight(index: number) {
+            const randomIndex =
+                Math.floor(Math.random() * (this.parsedMatchedObjects.length - 4)) + 4;
+
+            const buff = this.parsedMatchedObjects[index];
+            this.parsedMatchedObjects[index] = this.parsedMatchedObjects[randomIndex];
+            this.parsedMatchedObjects[randomIndex] = buff;
+
+            const buffImg = this.imageList[index];
+            this.imageList[index] = this.imageList[randomIndex];
+            this.imageList[randomIndex] = buffImg;
+
+            this.swipedIndex = 0;
+        },
+        resetSwipe(swipeContent: HTMLElement) {
+            swipeContent.style.transition = "";
+            swipeContent.style.transform = "";
+            this.swipeDirection = '';
         }
     },
     computed: {
@@ -266,12 +359,23 @@ export default {
                             @click="sendReworkedPromptAsContent" :is-form-disabled="isFormDisabled" />
                     </div>
                     <div :class="isFormDisabled ? 'consultant__match match-consultant disabled' : 'consultant__match match-consultant'"
-                        v-if="isMessageTypeMatch">
+                        v-if="isMessageTypeMatch && parsedMatchedObjects.length > 0">
                         <div class="match-consultant__list" v-if="sneakerToShow === null">
-                            <div class="match-consultant__item" v-for="(image, index) in imageList" :key="index">
-                                <div class="match-consultant__img" :style="{ backgroundImage: `url(${image})` }"></div>
-                                <EButton :title="'Show details'" :class="{ 'consultant__btn-match': true }"
-                                    @click="showSneaker(index)" />
+                            <div class="match-consultant__item"
+                                v-for="(item, index) in parsedMatchedObjects.slice(0, 4)" :key="index">
+                                <div class="swipe-content" :id="index.toString()" :class="{
+                                    'swiping-left': swipedIndex === index && swipeDirection === 'left',
+                                    'swiping-right': swipedIndex === index && swipeDirection === 'right'
+                                }" @touchstart="onTouchStart($event, index)" @touchmove="onTouchMove($event)"
+                                    @touchend="onTouchEnd($event, index)">
+                                    <div class="match-consultant__img"
+                                        :style="{ backgroundImage: `url(${imageList[index]})` }"
+                                        @touchstart="onTouchStart($event, index)" @touchmove="onTouchMove($event)"
+                                        @touchend="onTouchEnd($event, index)">
+                                    </div>
+                                    <EButton :title="'Show details'" :class="{ 'consultant__btn-match': true }"
+                                        @click="showSneaker(index)" />
+                                </div>
                             </div>
                         </div>
                         <div class="match-consultant__selected selected-match" v-if="sneakerToShow !== null">
@@ -283,17 +387,15 @@ export default {
                             </div>
                             <div class="selected-match__info">
                                 <div class="selected-match__brand">{{
-                                    messageResponse.message.additional['match' + (sneakerToShow + 1)][5].brand }}</div>
+                                    (parsedMatchedObjects[sneakerToShow][5] as any).brand }}</div>
                                 <div class="selected-match__name">{{
-                                    messageResponse.message.additional['match' + (sneakerToShow + 1)][2].display_name }}
+                                    (parsedMatchedObjects[sneakerToShow][2] as any).display_name }}
                                 </div>
                                 <div class="selected-match__price">{{
-                                    messageResponse.message.additional['match' + (sneakerToShow +
-                                        1)][4].price.replace(/^[^\d]+/, '') }} €
+                                    (parsedMatchedObjects[sneakerToShow][4] as any).price.replace(/^[^\d]+/, '') }} €
                                 </div>
                             </div>
-                            <div class="selected-match__shop">{{ messageResponse.message.additional['match' +
-                                (sneakerToShow + 1)][6].shop
+                            <div class="selected-match__shop">{{ (parsedMatchedObjects[sneakerToShow][6] as any).shop
                                 }}</div>
                             <EButton :title="'Shop Now'" :class="{ 'selected-match__btn': true }" />
                         </div>
@@ -323,6 +425,19 @@ export default {
 </template>
 
 <style scoped>
+.swipe-content {
+    transition: transform 0.3s ease-out;
+    will-change: transform;
+}
+
+.swiping-left {
+    transform: translateX(-100%);
+}
+
+.swiping-right {
+    transform: translateX(100%);
+}
+
 .selected-match__img-wrapper {
     position: relative;
 }
@@ -380,6 +495,7 @@ export default {
 .consultant__match {
     max-height: 500px;
     overflow-y: scroll;
+    overflow-x: hidden;
     padding: 17px;
 }
 
