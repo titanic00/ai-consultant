@@ -54,12 +54,20 @@ export default {
     },
     methods: {
         onTouchStartY(event: TouchEvent, index: number) {
+            const target = event.target as Element | null;
+            if (target && target.closest('.full-prompt')) {
+                return;
+            }
             this.startY = event.touches[0].clientY;
             this.currentY = this.startY;
             this.swipedIndex = index;
             this.swipeDirection = '';
         },
         onTouchMoveY(event: TouchEvent) {
+            const target = event.target as Element | null;
+            if (target && target.closest('.full-prompt')) {
+                return;
+            }
             this.currentY = event.touches[0].clientY;
             const deltaY = this.currentY - this.startY;
             const swipeContent = document.getElementById(this.swipedIndex.toString());
@@ -71,12 +79,16 @@ export default {
             }
         },
         onTouchEndY(event: Event, index: number) {
+            const target = event.target as Element | null;
+            if (target && target.closest('.full-prompt')) {
+                return;
+            }
             const deltaY = this.currentY - this.startY;
             const swipeContent = document.getElementById(index.toString());
 
             if (swipeContent) {
+                // swipe up
                 if (deltaY < -50) {
-                    // Swipe up detected
                     this.swipeDirection = "up";
                     swipeContent.style.transition = "transform 0.3s ease-out";
                     swipeContent.style.transform = `translateY(${-100}%)`;
@@ -85,7 +97,6 @@ export default {
                         this.onSwipeUp(index);
                     }, 200);
                 } else {
-                    // Invalid swipe, reset position
                     this.isCardShown = false
                     swipeContent.style.transition = "transform 0.3s ease-out";
                     swipeContent.style.transform = `translateY(${0}%)`;
@@ -94,7 +105,6 @@ export default {
             }
         },
         onSwipeUp(index: number) {
-            // Handle swipe-up logic here
             this.isCardShown = true
         },
         onTouchStartX(event: TouchEvent, index: number) {
@@ -176,12 +186,14 @@ export default {
             this.accessToken = data.access_token
         },
         parseMatchedObjects() {
+            this.parsedMatchedObjects = []
             Object.keys(this.messageResponse.message.additional).forEach(key => {
                 const group = this.messageResponse.message.additional[key];
                 (this.parsedMatchedObjects as any[]).push(group);
             });
         },
         async downloadFile() {
+            this.imageList = []
             const bucketName = import.meta.env.VITE_BUCKET_NAME;
             const promises: Promise<string>[] = [];
 
@@ -424,7 +436,7 @@ export default {
                             </div>
                         </div>
                         <div :class="isFormDisabled ? 'consultant__match match-consultant disabled' : 'consultant__match match-consultant'"
-                            v-if="parsedMatchedObjects.length > 0">
+                            v-if="isMessageTypeMatch && parsedMatchedObjects.length > 0">
                             <div class="match-consultant__list" v-if="sneakerToShow === null">
                                 <div class="match-consultant__item"
                                     v-for="(item, index) in parsedMatchedObjects.slice(0, 4)" :key="index">
@@ -836,7 +848,7 @@ export default {
 .consultant__settings {
     background-color: #fff;
     height: auto;
-    margin: 8px 16px 8px 16px;
+    margin: 8px 16px 16px 16px;
     border-radius: 20px;
     border: 1px solid #F3ECE4;
     gap: 10px;
