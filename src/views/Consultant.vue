@@ -31,7 +31,10 @@ export default {
             swipedIndex: 0,
             startX: 0,
             currentX: 0,
-            swipeDirection: ''
+            startY: 0,
+            currentY: 0,
+            swipeDirection: '',
+            isCardShown: true,
         }
     },
     // test message: Erstelle mir ein Sneakerdesign, die sollen rot und im Retrostil sein, Marke ist Balenciaga
@@ -50,13 +53,57 @@ export default {
         window.removeEventListener('resize', this.adjustViewportHeight);
     },
     methods: {
-        onTouchStart(event: TouchEvent, index: number) {
+        onTouchStartY(event: TouchEvent, index: number) {
+            this.startY = event.touches[0].clientY;
+            this.currentY = this.startY;
+            this.swipedIndex = index;
+            this.swipeDirection = '';
+        },
+        onTouchMoveY(event: TouchEvent) {
+            this.currentY = event.touches[0].clientY;
+            const deltaY = this.currentY - this.startY;
+            const swipeContent = document.getElementById(this.swipedIndex.toString());
+            if (swipeContent && this.isCardShown) {
+                this.isCardShown = false
+                swipeContent.style.transition = "transform 0.3s ease-out";
+                swipeContent.style.transform = `translateY(${deltaY}%)`;
+                swipeContent.style.position = `relative`;
+            }
+        },
+        onTouchEndY(event: Event, index: number) {
+            const deltaY = this.currentY - this.startY;
+            const swipeContent = document.getElementById(index.toString());
+
+            if (swipeContent) {
+                if (deltaY < -50) {
+                    // Swipe up detected
+                    this.swipeDirection = "up";
+                    swipeContent.style.transition = "transform 0.3s ease-out";
+                    swipeContent.style.transform = `translateY(${-100}%)`;
+                    setTimeout(() => {
+                        swipeContent.style.position = `absolute`;
+                        this.onSwipeUp(index);
+                    }, 200);
+                } else {
+                    // Invalid swipe, reset position
+                    this.isCardShown = false
+                    swipeContent.style.transition = "transform 0.3s ease-out";
+                    swipeContent.style.transform = `translateY(${0}%)`;
+                    swipeContent.style.position = `relative`;
+                }
+            }
+        },
+        onSwipeUp(index: number) {
+            // Handle swipe-up logic here
+            this.isCardShown = true
+        },
+        onTouchStartX(event: TouchEvent, index: number) {
             this.startX = event.touches[0].clientX;
             this.currentX = this.startX;
             this.swipedIndex = index;
             this.swipeDirection = '';
         },
-        onTouchMove(event: TouchEvent) {
+        onTouchMoveX(event: TouchEvent) {
             this.currentX = event.touches[0].clientX;
             const deltaX = this.currentX - this.startX;
             const swipeContent = document.getElementById(this.swipedIndex.toString());
@@ -64,7 +111,7 @@ export default {
                 swipeContent.style.transform = `translateX(${deltaX}px)`;
             }
         },
-        onTouchEnd(event: Event, index: number) {
+        onTouchEndX(event: Event, index: number) {
             const deltaX = this.currentX - this.startX;
             const swipeContent = document.getElementById(index.toString());
 
@@ -245,7 +292,6 @@ export default {
                 this.isFormDisabled = false;
                 this.messageResponse = response
                 if (response.message.type === 'create') {
-                    console.log(this.backgroundImageUrl);
                     this.backgroundImageUrl = response.message.additional.designUrl;
                     this.extractObjects(response);
                 }
@@ -340,75 +386,92 @@ export default {
 <template>
     <div class="consultant" :style="{ height: `${viewportHeight}px` }">
         <div class="consultant__body">
-            <div class="consultant__design">
+            <div class="consultant__header">
+                <EButton :title="'Design it yourself!'" :class="{ 'consultant__btn-show-card': true }"
+                    @touchstart="onTouchStartY($event, 0.1)" @touchmove="onTouchMoveY($event)"
+                    @touchend="onTouchEndY($event, 0.1)" />
+                <div class="consultant__profile-icon"></div>
+                <div class="consultant__profile-burger">
+                    <span></span>
+                </div>
+            </div>
+            <div :id="0.1.toString()" :class="[{ consultant__design: true }, {
+                'swiping-top': swipedIndex === 0.1 && swipeDirection === 'top',
+                'swiping-down': swipedIndex === 0.1 && swipeDirection === 'down'
+            }]" @touchstart.stop="onTouchStartY($event, 0.1)" @touchmove.stop="onTouchMoveY($event)"
+                @touchend.stop="onTouchEndY($event, 0.1)">
                 <div class="consultant__sneakers">
-                    <div class="consultant__sneakers-img" :style="{ backgroundImage: `url(${backgroundImageUrl})` }">
-                    </div>
-                    <div v-if="isMessageTypeCreate"
-                        :class="isFormDisabled ? 'consultant__settings disabled' : 'consultant__settings'">
-                        <div :class="openDropdown === null ? 'full-prompt' : 'full-prompt full-prompt--scroll-disabled'"
-                            ref="fullPrompt">
-                            <template v-for="(item, index) in processedPrompt" :key="index">
-                                <span v-if="typeof item === 'string'">{{ item }}</span>
-                                <span v-else class="dropdown-placeholder" @click="toggleDropdown(index)">
-                                    {{ item.selected }}
-                                </span>
-                            </template>
+                    <div class="">
+                        <div class="consultant__sneakers-img"
+                            :style="{ backgroundImage: `url(${backgroundImageUrl})` }">
                         </div>
-                        <div class="consultant__settings-buttons">
-                            <EButton :title="'Find sneakers'" :class="{ 'consultant__btn-find': true }"
-                                @click="sendReworkedPromptAsContent(true)" :is-form-disabled="isFormDisabled" />
-                            <EButton :title="'Generate'" :class="{ 'consultant__btn-generate': true }"
-                                @click="sendReworkedPromptAsContent(false)" :is-form-disabled="isFormDisabled" />
+                        <div v-if="isMessageTypeCreate"
+                            :class="isFormDisabled ? 'consultant__settings disabled' : 'consultant__settings'">
+                            <div :class="openDropdown === null ? 'full-prompt' : 'full-prompt full-prompt--scroll-disabled'"
+                                ref="fullPrompt">
+                                <template v-for="(item, index) in processedPrompt" :key="index">
+                                    <span v-if="typeof item === 'string'">{{ item }}</span>
+                                    <span v-else class="dropdown-placeholder" @click="toggleDropdown(index)">
+                                        {{ item.selected }}
+                                    </span>
+                                </template>
+                            </div>
+                            <div class="consultant__settings-buttons">
+                                <EButton :title="'Find sneakers'" :class="{ 'consultant__btn-find': true }"
+                                    @click="sendReworkedPromptAsContent(true)" :is-form-disabled="isFormDisabled" />
+                                <EButton :title="'Generate'" :class="{ 'consultant__btn-generate': true }"
+                                    @click="sendReworkedPromptAsContent(false)" :is-form-disabled="isFormDisabled" />
+                            </div>
                         </div>
-                    </div>
-                    <div :class="isFormDisabled ? 'consultant__match match-consultant disabled' : 'consultant__match match-consultant'"
-                        v-if="isMessageTypeMatch && parsedMatchedObjects.length > 0">
-                        <div class="match-consultant__list" v-if="sneakerToShow === null">
-                            <div class="match-consultant__item"
-                                v-for="(item, index) in parsedMatchedObjects.slice(0, 4)" :key="index">
-                                <div class="swipe-content" :id="index.toString()" :class="{
-                                    'swiping-left': swipedIndex === index && swipeDirection === 'left',
-                                    'swiping-right': swipedIndex === index && swipeDirection === 'right'
-                                }" @touchstart="onTouchStart($event, index)" @touchmove="onTouchMove($event)"
-                                    @touchend="onTouchEnd($event, index)">
-                                    <div class="match-consultant__img"
-                                        :style="{ backgroundImage: `url(${imageList[index]})` }"
-                                        @touchstart="onTouchStart($event, index)" @touchmove="onTouchMove($event)"
-                                        @touchend="onTouchEnd($event, index)">
+                        <div :class="isFormDisabled ? 'consultant__match match-consultant disabled' : 'consultant__match match-consultant'"
+                            v-if="parsedMatchedObjects.length > 0">
+                            <div class="match-consultant__list" v-if="sneakerToShow === null">
+                                <div class="match-consultant__item"
+                                    v-for="(item, index) in parsedMatchedObjects.slice(0, 4)" :key="index">
+                                    <div class="swipe-content" :id="index.toString()" :class="{
+                                        'swiping-left': swipedIndex === index && swipeDirection === 'left',
+                                        'swiping-right': swipedIndex === index && swipeDirection === 'right'
+                                    }" @touchstart.stop="onTouchStartX($event, index)"
+                                        @touchmove.stop="onTouchMoveX($event)"
+                                        @touchend.stop="onTouchEndX($event, index)">
+                                        <div class="match-consultant__img"
+                                            :style="{ backgroundImage: `url(${imageList[index]})` }">
+                                        </div>
+                                        <EButton :title="'Show details'" :class="{ 'consultant__btn-match': true }"
+                                            @click="showSneaker(index)" />
                                     </div>
-                                    <EButton :title="'Show details'" :class="{ 'consultant__btn-match': true }"
-                                        @click="showSneaker(index)" />
                                 </div>
                             </div>
-                        </div>
-                        <div class="match-consultant__selected selected-match" v-if="sneakerToShow !== null">
-                            <div class="selected-match__img-wrapper">
-                                <div class="selected-match__img"
-                                    :style="{ backgroundImage: `url(${imageList[sneakerToShow]})` }"></div>
-                                <div class="selected-match__favorite"></div>
-                                <div class="selected-match__arrow" @click="showAllSneakers"></div>
-                            </div>
-                            <div class="selected-match__info">
-                                <div class="selected-match__brand">{{
-                                    (parsedMatchedObjects[sneakerToShow][5] as any).brand }}</div>
-                                <div class="selected-match__name">{{
-                                    (parsedMatchedObjects[sneakerToShow][2] as any).display_name }}
+                            <div class="match-consultant__selected selected-match" v-if="sneakerToShow !== null">
+                                <div class="selected-match__img-wrapper">
+                                    <div class="selected-match__img"
+                                        :style="{ backgroundImage: `url(${imageList[sneakerToShow]})` }"></div>
+                                    <div class="selected-match__favorite"></div>
+                                    <div class="selected-match__arrow" @click="showAllSneakers"></div>
                                 </div>
-                                <div class="selected-match__price">{{
-                                    (parsedMatchedObjects[sneakerToShow][4] as any).price.replace(/^[^\d]+/, '') }} €
+                                <div class="selected-match__info">
+                                    <div class="selected-match__brand">{{
+                                        (parsedMatchedObjects[sneakerToShow][5] as any).brand }}</div>
+                                    <div class="selected-match__name">{{
+                                        (parsedMatchedObjects[sneakerToShow][2] as any).display_name }}
+                                    </div>
+                                    <div class="selected-match__price">{{
+                                        (parsedMatchedObjects[sneakerToShow][4] as any).price.replace(/^[^\d]+/, '') }}
+                                        €
+                                    </div>
                                 </div>
+                                <div class="selected-match__shop">{{ (parsedMatchedObjects[sneakerToShow][6] as
+                                    any).shop
+                                    }}</div>
+                                <a :href="`${(parsedMatchedObjects[sneakerToShow][7] as any).affLink}`"
+                                    class="selected-match__btn" target="_blank" rel="noopener noreferrer">Shop Now</a>
                             </div>
-                            <div class="selected-match__shop">{{ (parsedMatchedObjects[sneakerToShow][6] as any).shop
-                                }}</div>
-                            <a :href="`${(parsedMatchedObjects[sneakerToShow][7] as any).affLink}`"
-                                class="selected-match__btn" target="_blank" rel="noopener noreferrer">Shop Now</a>
                         </div>
                     </div>
                 </div>
             </div>
             <div class="chat-container">
-                <div class="chat-box">
+                <div :class="!isCardShown ? 'chat-box' : 'chat-box chat-box--margin-top'">
                     <MessageList :messages="messages" :message-style="'consultant-message'" />
                 </div>
                 <div class="consultant__form">
@@ -430,6 +493,87 @@ export default {
 </template>
 
 <style scoped>
+.consultant__profile-burger {
+    position: absolute;
+    width: 20px;
+    height: 14px;
+    top: 50%;
+    transform: translateY(-50%);
+    left: 17px;
+    z-index: 1000;
+    border: none;
+}
+
+.consultant__profile-burger::after {
+    content: '';
+    position: absolute;
+    width: 20px;
+    height: 2px;
+    background-color: #333333;
+    bottom: 0;
+    z-index: 1000;
+}
+
+.consultant__profile-burger span {
+    position: absolute;
+    width: 20px;
+    height: 2px;
+    background-color: #333333;
+    top: 50%;
+    transform: translateY(-50%);
+    z-index: 1000;
+}
+
+.consultant__profile-burger::before {
+    content: '';
+    position: absolute;
+    width: 20px;
+    height: 2px;
+    background-color: #333333;
+    top: 0px;
+    z-index: 1000;
+}
+
+.consultant__profile-icon {
+    position: absolute;
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    background-color: #fff;
+    top: 50%;
+    transform: translateY(-50%);
+    right: 17px;
+    z-index: 1000;
+}
+
+.consultant__header {
+    background-color: #F3F3F3;
+    padding: 17px 24px;
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    border-bottom: 1px solid #DADADA;
+    border-bottom-right-radius: 20px;
+    border-bottom-left-radius: 20px;
+}
+
+.consultant__header::after {
+    content: '';
+    width: 56px;
+    border: 2px solid #CACACA;
+    position: absolute;
+    bottom: 6px;
+    left: 50%;
+    transform: translateX(-50%);
+    border-radius: 3px;
+}
+
+.consultant__design {
+    transform: translateY(-100%);
+    position: absolute;
+}
+
 .selected-match__btn {
     display: block;
     border: none;
@@ -465,6 +609,16 @@ export default {
 .swipe-content {
     transition: transform 0.3s ease-out;
     will-change: transform;
+}
+
+.swiping-top {
+    transform: translateY(-100%);
+    position: absolute;
+}
+
+.swiping-down {
+    transform: translateY(0%);
+    position: relative;
 }
 
 .swiping-left {
@@ -736,5 +890,9 @@ export default {
     flex-grow: 1;
     margin-bottom: 15px;
     height: auto;
+}
+
+.chat-box--margin-top {
+    margin-top: 70px;
 }
 </style>

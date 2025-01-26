@@ -133,6 +133,41 @@ export default {
     right: 16%;
 }
 
+.consultant__btn-show-card {
+    text-align: center;
+}
+
+.consultant__btn-show-card button {
+    border: 1px solid #F70067;
+    background: #FFFFFF;
+    border-radius: 10px;
+    padding: 6.5px 16px 6.5px 46px;
+    position: relative;
+    color: #F70067;
+}
+
+.consultant__btn-show-card button::after {
+    content: '';
+    background-image: url('/consultant/pen.svg');
+    background-position: center;
+    background-repeat: no-repeat;
+    background-size: cover;
+    position: absolute;
+    width: 30px;
+    height: 30px;
+    top: 50%;
+    transform: translateY(-50%);
+    left: 7%;
+}
+
+.consultant__btn-show-card--disabled {
+    display: none;
+}
+
+.hide {
+    display: none;
+}
+
 /* Startpage.vue */
 /* ------------------------------------------------------------------------------ */
 .startpage__btn-demo button {
