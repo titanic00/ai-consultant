@@ -160,13 +160,13 @@ export default {
 
             try {
                 const results = await Promise.all(promises);
-                this.imageList = results.filter(result => result !== null);
+                this.imageList = results.filter(result => result !== null && result !== undefined);
                 // this.backgroundImageUrl = this.imageList[0];
             } catch (error) {
                 console.error('Error downloading files:', error);
             }
         },
-        generateUpdatedPrompt() {
+        generateUpdatedPrompt(showMatch: boolean) {
             let updatedPrompt = this.processedPrompt.map(item => {
                 if (typeof item === 'object') {
                     return item.selected;
@@ -174,7 +174,11 @@ export default {
                 return item;
             }).join('');
 
-            return 'Can you create a design based on the following prompt? - ' + updatedPrompt;
+            if (!showMatch) {
+                return 'Can you create a design based on the following prompt? - ' + updatedPrompt;
+            } else {
+                return 'Show me matched design for this sneakers - ' + updatedPrompt;
+            }
         },
         toggleDropdown(index: number) {
             this.openDropdown = this.openDropdown === index ? null : index;
@@ -257,8 +261,8 @@ export default {
                 this.isFormDisabled = false;
             })
         },
-        sendReworkedPromptAsContent() {
-            const updatedPrompt = this.generateUpdatedPrompt();
+        sendReworkedPromptAsContent(showMatch: boolean) {
+            const updatedPrompt = this.generateUpdatedPrompt(showMatch);
             this.content = updatedPrompt
             this.sendMessage()
         },
@@ -351,8 +355,12 @@ export default {
                                 </span>
                             </template>
                         </div>
-                        <EButton :title="'Generate'" :class="{ 'consultant__btn-generate': true }"
-                            @click="sendReworkedPromptAsContent" :is-form-disabled="isFormDisabled" />
+                        <div class="consultant__settings-buttons">
+                            <EButton :title="'Find sneakers'" :class="{ 'consultant__btn-find': true }"
+                                @click="sendReworkedPromptAsContent(true)" :is-form-disabled="isFormDisabled" />
+                            <EButton :title="'Generate'" :class="{ 'consultant__btn-generate': true }"
+                                @click="sendReworkedPromptAsContent(false)" :is-form-disabled="isFormDisabled" />
+                        </div>
                     </div>
                     <div :class="isFormDisabled ? 'consultant__match match-consultant disabled' : 'consultant__match match-consultant'"
                         v-if="isMessageTypeMatch && parsedMatchedObjects.length > 0">
@@ -393,7 +401,8 @@ export default {
                             </div>
                             <div class="selected-match__shop">{{ (parsedMatchedObjects[sneakerToShow][6] as any).shop
                                 }}</div>
-                            <EButton :title="'Shop Now'" :class="{ 'selected-match__btn': true }" />
+                            <a :href="`${(parsedMatchedObjects[sneakerToShow][7] as any).affLink}`"
+                                class="selected-match__btn" target="_blank" rel="noopener noreferrer">Shop Now</a>
                         </div>
                     </div>
                 </div>
@@ -421,6 +430,38 @@ export default {
 </template>
 
 <style scoped>
+.selected-match__btn {
+    display: block;
+    border: none;
+    background-color: #F70067;
+    width: 100%;
+    padding: 11px;
+    border-radius: 10px;
+    color: #fff;
+    position: relative;
+    text-decoration: none;
+    text-align: center;
+}
+
+.selected-match__btn::after {
+    content: '';
+    position: absolute;
+    width: 25px;
+    height: 25px;
+    background-image: url('/consultant/shop.svg');
+    background-position: center;
+    background-repeat: no-repeat;
+    background-size: cover;
+    top: 50%;
+    transform: translateY(-50%);
+    left: 30%;
+}
+
+.consultant__settings-buttons {
+    display: flex;
+    gap: 8px;
+}
+
 .swipe-content {
     transition: transform 0.3s ease-out;
     will-change: transform;
@@ -645,7 +686,7 @@ export default {
     border-radius: 20px;
     border: 1px solid #F3ECE4;
     gap: 10px;
-    padding: 16px;
+    padding: 12px;
     display: flex;
     flex-direction: column;
 }
