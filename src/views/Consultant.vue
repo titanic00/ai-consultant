@@ -3,20 +3,21 @@ import { downloadImg, newMessage, newThread } from '@/api/MessageClient';
 import EButton from '@/components/EButton.vue';
 import EInput from '@/components/EInput.vue';
 import MessageList from '@/components/MessageList.vue';
+import Spinner from '@/components/Spinner.vue';
 import type MessageData from '@/models/MessageData';
 import { KJUR } from 'jsrsasign';
 
 type PromptItem = string | { key: string; values: string[]; selected: string };
 
 export default {
-    components: { MessageList, EButton, EInput },
+    components: { MessageList, EButton, EInput, Spinner },
     data() {
         return {
             messages: [] as MessageData[],
             messageResponse: {} as MessageData,
             isFormDisabled: false,
             content: "",
-            backgroundImageUrl: 'https://storage.googleapis.com/dbassistant/createddesigns/20250109151436.jpg',
+            backgroundImageUrl: '/consultant/default-sneaker.svg',
             viewportHeight: window.innerHeight,
             extractedObjects: [] as Array<PromptItem>,
             selectedValues: [] as string[],
@@ -35,6 +36,7 @@ export default {
             currentY: 0,
             swipeDirection: '',
             isCardShown: true,
+            isLoading: false
         }
     },
     // test message: Erstelle mir ein Sneakerdesign, die sollen rot und im Retrostil sein, Marke ist Balenciaga
@@ -208,7 +210,7 @@ export default {
                             downloadImg(this.accessToken, bucketName, reworkedFileName)
                                 .then(response => {
                                     if (response === null) {
-                                        return 'https://storage.googleapis.com/dbassistant/createddesigns/20250109151436.jpg';
+                                        return '/consultant/default-sneaker.svg';
                                     }
                                     return URL.createObjectURL(response);
                                 })
@@ -296,11 +298,13 @@ export default {
             return messageData;
         },
         sendMessage() {
+            this.isLoading = true
             this.isFormDisabled = true;
             const messageData = this.createMessageData(this.content, "userInput", "user");
             this.content = "";
             this.sneakerToShow = null
             newMessage(messageData).then((response) => {
+                this.isLoading = false
                 this.isFormDisabled = false;
                 this.messageResponse = response
                 if (response.message.type === 'create') {
@@ -372,6 +376,9 @@ export default {
             swipeContent.style.transition = "";
             swipeContent.style.transform = "";
             this.swipeDirection = '';
+        },
+        isImageDefault() {
+            return this.backgroundImageUrl === '/consultant/default-sneaker.svg'
         }
     },
     computed: {
@@ -414,7 +421,7 @@ export default {
                 @touchend.stop="onTouchEndY($event, 0.1)">
                 <div class="consultant__sneakers">
                     <div class="">
-                        <div class="consultant__sneakers-img"
+                        <div :class="isImageDefault() ? 'consultant__sneakers-img consultant__sneaker-img--default' : 'consultant__sneakers-img'"
                             :style="{ backgroundImage: `url(${backgroundImageUrl})` }">
                         </div>
                         <div v-if="isMessageTypeCreate"
@@ -502,9 +509,28 @@ export default {
             </div>
         </div>
     </div>
+    <div class="consultant__spinner-overlay spinner-overlay" v-if="isLoading">
+        <div class="consultant__spinner spinner">
+            <Spinner />
+        </div>
+    </div>
 </template>
 
 <style scoped>
+.spinner-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(255, 255, 255, 0.8);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000000;
+    text-align: center;
+}
+
 .consultant__profile-burger {
     position: absolute;
     width: 20px;
@@ -871,6 +897,10 @@ export default {
     flex-shrink: 0;
     position: relative;
     background-color: #eeeeee;
+}
+
+.consultant__sneaker-img--default {
+    background-size: 264px;
 }
 
 .consultant__body {
