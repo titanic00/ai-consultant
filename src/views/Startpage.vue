@@ -1,9 +1,9 @@
 <script lang="ts">
+import { impressum } from '@/assets/impressum';
 import { messageData } from '@/assets/MessageDataLanding.ts';
 import EButton from '@/components/EButton.vue';
 import EInput from '@/components/EInput.vue';
 import MessageList from '@/components/MessageList.vue';
-import { impressum } from '@/assets/impressum';
 import emailjs from '@emailjs/browser';
 
 
@@ -13,17 +13,26 @@ export default {
         return {
             messageData: messageData,
             impressum: impressum,
-            email: ''
+            email: '',
+            isEmailSent: false,
+            isInputDisabled: false
         }
     },
     methods: {
         sendEmail() {
             if (this.email !== '') {
+                this.isEmailSent = true
+                this.isInputDisabled = true
                 emailjs.send('service_bqxgjgz', 'template_64wit4a', {
                     userEmail: this.email,
                 }, 'DdBf0xh09O6uBNRuY')
                     .then(() => {
                         this.email = ''
+                        this.isEmailSent = true
+                        this.isInputDisabled = false
+                        setTimeout(() => {
+                            this.isEmailSent = false
+                        }, 5000)
                     })
             }
         },
@@ -50,7 +59,13 @@ export default {
                     want — effortlessly and smarter</h2>
             </div>
             <div class="startpage__form">
-                <EInput :class="{ 'startpage__input-email': true }" :placeholder="'Your email'" v-model="email" />
+                <div :class="isEmailSent ? 'startpage__success' : 'disabled'">You have been successfully added to the
+                    waiting list! A confirmation has
+                    been sent to
+                    your
+                    email.</div>
+                <EInput :class="{ 'startpage__input-email': true }" :is-form-disabled="isInputDisabled"
+                    :placeholder="'Your email'" v-model="email" />
                 <EButton :class="{ 'startpage__btn-demo': true }" :title="'Join the waitlist'" @click="sendEmail" />
                 <EButton :class="{ 'startpage__btn-impressum': true }" :title="'Imprint'" data-bs-toggle="modal"
                     data-bs-target="#impressumModal" />
@@ -78,6 +93,19 @@ export default {
 </template>
 
 <style scoped>
+.disabled {
+    display: none;
+}
+
+.startpage__success {
+    background-color: green;
+    color: #000;
+    color: white;
+    padding: 10px;
+    border-radius: 10px;
+    text-align: center;
+}
+
 .landing__messages-list {
     width: 100%;
 }
