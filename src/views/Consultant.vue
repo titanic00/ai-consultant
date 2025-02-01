@@ -35,12 +35,13 @@ export default {
             startY: 0,
             currentY: 0,
             swipeDirection: '',
-            isCardShown: true,
+            isCardShown: false,
             isLoading: false
         }
     },
     // test message: Erstelle mir ein Sneakerdesign, die sollen rot und im Retrostil sein, Marke ist Balenciaga
     mounted() {
+        this.isLoading = true
         this.adjustViewportHeight();
         window.addEventListener('resize', this.adjustViewportHeight);
 
@@ -49,6 +50,7 @@ export default {
         newThread().then((response) => {
             sessionStorage.setItem("thread_id", response.threadId);
             this.displayMessage(response, "assistant");
+            this.isLoading = false
         });
     },
     beforeUnmount() {
@@ -406,15 +408,20 @@ export default {
     <div class="consultant" :style="{ height: `${viewportHeight}px` }">
         <div class="consultant__body">
             <div class="consultant__header">
-                <EButton :title="'Design it yourself!'" :class="{ 'consultant__btn-show-card': true }"
+                <EButton :title="'Unfold'" :class="{ 'consultant__btn-show-card': true }"
                     @touchstart="onTouchStartY($event, 0.1)" @touchmove="onTouchMoveY($event)"
                     @touchend="onTouchEndY($event, 0.1)" />
-                <div class="consultant__profile-icon"></div>
+                <div class="consultant__profile-icon profile-icon">
+                    <div class="profile-icon__photo">
+                        <div class="profile-icon__background"></div>
+                    </div>
+                    <div class="profile-icon__nickname">EIDOS</div>
+                </div>
                 <div class="consultant__profile-burger">
                     <span></span>
                 </div>
             </div>
-            <div :id="0.1.toString()" :class="[{ consultant__design: true }, {
+            <div :id="0.1.toString()" :class="[{ consultant__design: false }, {
                 'swiping-top': swipedIndex === 0.1 && swipeDirection === 'top',
                 'swiping-down': swipedIndex === 0.1 && swipeDirection === 'down'
             }]" @touchstart.stop="onTouchStartY($event, 0.1)" @touchmove.stop="onTouchMoveY($event)"
@@ -495,7 +502,7 @@ export default {
                 </div>
                 <div class="consultant__form">
                     <EInput :class="{ 'consultant__input': true }" :is-form-disabled="isFormDisabled" v-model="content"
-                        :placeholder="'Any other adjustments or questions'" />
+                        :placeholder="'Describe your design or ask anything'" />
                     <EButton :class="{ 'consultant__btn-send': true }" @click="sendMessage"
                         :is-form-disabled="isFormDisabled || content.length == 0" />
                 </div>
@@ -517,6 +524,45 @@ export default {
 </template>
 
 <style scoped>
+.profile-icon {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+
+.consultant__profile-icon {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    right: 17px;
+    z-index: 1000;
+}
+
+.profile-icon__photo {
+    position: relative;
+    width: 32px;
+    height: 32px;
+}
+
+.profile-icon__background {
+    content: '';
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    background-color: #fff;
+    position: absolute;
+    background-image: url('/consultant/ai-icon.svg');
+    background-position: 8px 5px;
+    background-repeat: no-repeat;
+    background-size: 16px;
+}
+
+.profile-icon__nickname {
+    font-size: 10px;
+    color: #F70067;
+}
+
 .spinner-overlay {
     position: fixed;
     top: 0;
@@ -569,18 +615,6 @@ export default {
     height: 2px;
     background-color: #333333;
     top: 0px;
-    z-index: 1000;
-}
-
-.consultant__profile-icon {
-    position: absolute;
-    width: 32px;
-    height: 32px;
-    border-radius: 50%;
-    background-color: #fff;
-    top: 50%;
-    transform: translateY(-50%);
-    right: 17px;
     z-index: 1000;
 }
 
@@ -897,6 +931,8 @@ export default {
     flex-shrink: 0;
     position: relative;
     background-color: #eeeeee;
+    border-bottom-right-radius: 20px;
+    border-bottom-left-radius: 20px;
 }
 
 .consultant__sneaker-img--default {
